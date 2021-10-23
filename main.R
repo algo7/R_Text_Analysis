@@ -21,4 +21,26 @@ library("tm")
 library("SnowballC")
 library("wordcloud")
 library("RColorBrewer")
-print("tm" %in% rownames(installed.packages()))
+
+# Read the text file from internet
+file_path <- "http://www.sthda.com/sthda/RDoc/example-files/martin-luther-king-i-have-a-dream-speech.txt"
+
+# Load the file into a variable
+text <- readLines(file_path)
+
+# Load the data as a corpus
+docs <- Corpus(VectorSource(text))
+
+# Text transformation
+# Function to substitute the given pattern with a white space
+to_space <- content_transformer(function(x, pattern) gsub(pattern, " ", x))
+
+# Remove /
+docs <- tm_map(docs, to_space, "/")
+
+# Remove @
+docs <- tm_map(docs, to_space, "@")
+
+# Remove |
+docs <- tm_map(docs, to_space, "\\|")
+
