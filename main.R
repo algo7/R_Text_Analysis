@@ -44,3 +44,26 @@ docs <- tm_map(docs, to_space, "@")
 # Remove |
 docs <- tm_map(docs, to_space, "\\|")
 
+# Convert the text to lower case
+docs <- tm_map(docs, content_transformer(tolower))
+
+# Remove numbers
+docs <- tm_map(docs, removeNumbers)
+
+# Remove english common stopwords
+docs <- tm_map(docs, removeWords, stopwords("english"))
+
+# Remove your own stop word
+# specify your stopwords as a character vector
+docs <- tm_map(docs, removeWords, c("blabla1", "blabla2"))
+
+# Remove punctuations
+docs <- tm_map(docs, removePunctuation)
+
+# Eliminate extra white spaces
+docs <- tm_map(docs, stripWhitespace)
+
+# Text stemming
+docs <- tm_map(docs, stemDocument)
+
+inspect(docs)
