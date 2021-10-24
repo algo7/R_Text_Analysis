@@ -83,8 +83,20 @@ d <- data.frame(word = names(v), freq = v)
 # Make reproducible results by setting the seed
 set.seed(2645)
 
-# File name + res
+# PDF
+pdf("wordcloud_packages.pdf")
+
+# The current graphic device (PDF)
+current_device <- dev.cur()
+
+# PNG
 png("wordcloud_packages.png", width = 12, height = 8, units = "in", res = 300)
+
+
+# Every device has a display list which records all of the graphics operations that occur in the device. dev.copy and dev.print copy graphics contents by copying the display list from one device to another device. Also, automatic redrawing of graphics contents following the resizing of a device depends on the contents of the display list.
+# After the command dev.control("inhibit"), graphics operations are not recorded in the display list so that dev.copy and dev.print will not copy anything and the contents of a device will not be redrawn automatically if the device is resized.
+dev.control("enable")
+
 
 # Plot
 wordcloud(
@@ -93,6 +105,11 @@ wordcloud(
     colors = brewer.pal(12, "Set3")
 )
 
+
+# Copies the graphics contents of the current device to the device specified by ‘which’
+dev.copy(which = current_device)
+
 # Turn of the current graphic device after creating the plot
 # to finish creating the image file
+dev.off()
 dev.off()
