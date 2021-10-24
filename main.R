@@ -117,3 +117,10 @@ print(findFreqTerms(dtm, lowfreq = 4))
 
 # Find terms that are associated with "freedom" with a correlation of > 0.3
 print(findAssocs(dtm, terms = "freedom", corlimit = 0.3))
+
+# Create a histogram of the top 10 most frequent words
+barplot(d[1:10, ]$freq,
+    las = 2, names.arg = d[1:10, ]$word,
+    col = "lightblue", main = "Top 10 Most Frequent Words",
+    ylab = "Frequencies"
+)
