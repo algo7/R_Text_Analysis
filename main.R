@@ -29,7 +29,7 @@ file_path <- "http://www.sthda.com/sthda/RDoc/example-files/martin-luther-king-i
 text <- readLines(file_path)
 
 # Load the data as a corpus
-docs <- Corpus(VectorSource(text))
+docs <- VCorpus(VectorSource(text))
 
 # Text transformation
 # Function to substitute the given pattern with a white space
@@ -66,4 +66,17 @@ docs <- tm_map(docs, stripWhitespace)
 # Text stemming
 docs <- tm_map(docs, stemDocument)
 
-inspect(docs)
+# Build term-document matrix
+# Document matrix is a table containing the frequency of the words.
+# Column names are words and row names are documents
+dtm <- TermDocumentMatrix(docs)
+
+# Convert term doc matrix into matrix
+m <- as.matrix(dtm)
+
+# Sum the frequencies of each word
+v <- sort(rowSums(m), decreasing = TRUE)
+
+# Convert the vector into a data frame
+d <- data.frame(word = names(v), freq = v)
+
