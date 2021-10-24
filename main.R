@@ -80,3 +80,9 @@ v <- sort(rowSums(m), decreasing = TRUE)
 # Convert the vector into a data frame
 d <- data.frame(word = names(v), freq = v)
 
+# Plot
+wordcloud(
+    words = d$word, freq = d$freq, min.freq = 1,
+    max.words = 200, random.order = FALSE, rot.per = 0.35,
+    colors = brewer.pal(12, "Set3")
+)
