@@ -31,7 +31,7 @@ text <- readLines(file_path)
 # Load the data as a corpus
 docs <- VCorpus(VectorSource(text))
 
-# Text transformation
+# Text transformation / pre-processing
 # Function to substitute the given pattern with a white space
 to_space <- content_transformer(function(x, pattern) gsub(pattern, " ", x))
 
