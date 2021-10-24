@@ -88,7 +88,7 @@ d <- data.frame(word = names(v), freq = v)
 set.seed(2645)
 
 # PDF settings
-pdf("wordcloud.pdf", width = 12, height = 8)
+pdf("wordcloud.pdf", width = 12, height = 8, compress = F)
 
 # The current graphic device (PDF)
 current_device <- dev.cur()
