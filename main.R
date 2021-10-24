@@ -85,6 +85,7 @@ v <- sort(rowSums(m), decreasing = TRUE)
 d <- data.frame(word = names(v), freq = v)
 
 # Make reproducible results by setting the seed
+# Doesnt apply to pdf for some reason
 set.seed(2645)
 
 # PDF settings
