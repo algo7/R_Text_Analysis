@@ -88,13 +88,10 @@ d <- data.frame(word = names(v), freq = v)
 set.seed(2645)
 
 # PDF settings
-pdf("wordcloud.pdf")
+pdf("wordcloud.pdf", width = 12, height = 8)
 
 # The current graphic device (PDF)
 current_device <- dev.cur()
-
-# Make reproducible results by setting the seed
-set.seed(2645)
 
 # PNG settings
 png("wordcloud.png", width = 12, height = 8, units = "in", res = 300)
