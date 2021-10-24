@@ -1,5 +1,8 @@
 # List of required pacakges
-required_pkgs <- c("tm", "SnowballC", "wordcloud", "RColorBrewer")
+required_pkgs <- c(
+    "tm", "SnowballC", "wordcloud", "RColorBrewer",
+    "wordcloud2"
+)
 
 # Empty list to hold dependencies that are not isntalled
 not_met_dependencies <- c()
@@ -20,6 +23,7 @@ if (length(not_met_dependencies) != 0) {
 library("tm")
 library("SnowballC")
 library("wordcloud")
+library("wordcloud2")
 library("RColorBrewer")
 
 # Read the text file from internet
@@ -89,6 +93,9 @@ pdf("wordcloud.pdf")
 # The current graphic device (PDF)
 current_device <- dev.cur()
 
+# Make reproducible results by setting the seed
+set.seed(2645)
+
 # PNG settings
 png("wordcloud.png", width = 12, height = 8, units = "in", res = 300)
 
@@ -97,15 +104,18 @@ png("wordcloud.png", width = 12, height = 8, units = "in", res = 300)
 # After the command dev.control("inhibit"), graphics operations are not recorded in the display list so that dev.copy and dev.print will not copy anything and the contents of a device will not be redrawn automatically if the device is resized.
 dev.control("enable")
 
-# For the the graph (1 row, 2 colS)
+# For the the graph (1 row, 2 cols)
 par(mfrow = c(1, 2))
 
-# Plot
+# WC Plot
 wc <- wordcloud(
     words = d$word, freq = d$freq, min.freq = 1,
     max.words = 200, random.order = FALSE, rot.per = 0.35,
     colors = brewer.pal(12, "Set3")
 )
+
+# Wordcloud2 support, needs to be printed explicitly
+wc2 <- wordcloud2(data = d, size = 1.6, color = "random-dark")
 
 # Create a histogram of the top 10 most frequent words
 top10_word_histo <- barplot(d[1:10, ]$freq,
