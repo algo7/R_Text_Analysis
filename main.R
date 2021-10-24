@@ -37,7 +37,7 @@ docs <- VCorpus(VectorSource(text))
 
 # Text transformation / pre-processing
 # Function to substitute the given pattern with a white space
-to_space <- content_transformer(function(x, pattern) gsub(pattern, " ", x))
+to_space <- content_transformer(function(text, pattern) gsub(pattern, " ", text))
 
 # Remove /
 docs <- tm_map(docs, to_space, "/")
