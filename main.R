@@ -111,7 +111,7 @@ wc <- wordcloud(
 top10_word_histo <- barplot(d[1:10, ]$freq,
     las = 2, names.arg = d[1:10, ]$word,
     col = "lightblue", main = "Top 10 Most Frequent Words",
-    ylab = "Frequencies"
+    ylab = "Frequencies", ylim = c(0, max(d$freq) + 5),
 )
 
 # Find words that appear more than 4 times
@@ -119,7 +119,6 @@ print(findFreqTerms(dtm, lowfreq = 4))
 
 # Find terms that are associated with "freedom" with a correlation of > 0.3
 print(findAssocs(dtm, terms = "freedom", corlimit = 0.3))
-
 
 # Copies the graphics contents of the current device to the device specified by ‘which’
 dev.copy(which = current_device)
