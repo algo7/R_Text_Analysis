@@ -80,7 +80,10 @@ v <- sort(rowSums(m), decreasing = TRUE)
 # Convert the vector into a data frame
 d <- data.frame(word = names(v), freq = v)
 
+# Make reproducible results by setting the seed
+set.seed(2645)
 
+# File name + res
 png("wordcloud_packages.png", width = 12, height = 8, units = "in", res = 300)
 
 # Plot
@@ -89,4 +92,7 @@ wordcloud(
     max.words = 200, random.order = FALSE, rot.per = 0.35,
     colors = brewer.pal(12, "Set3")
 )
+
+# Turn of the current graphic device after creating the plot
+# to finish creating the image file
 dev.off()
