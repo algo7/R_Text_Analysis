@@ -111,3 +111,9 @@ dev.copy(which = current_device)
 # to finish creating the image file
 dev.off()
 dev.off()
+
+# Find words that appear more than 4 times
+print(findFreqTerms(dtm, lowfreq = 4))
+
+# Find terms that are associated with "freedom" with a correlation of > 0.3
+print(findAssocs(dtm, terms = "freedom", corlimit = 0.3))
