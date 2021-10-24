@@ -111,7 +111,7 @@ wc <- wordcloud(
 top10_word_histo <- barplot(d[1:10, ]$freq,
     las = 2, names.arg = d[1:10, ]$word,
     col = "lightblue", main = "Top 10 Most Frequent Words",
-    ylab = "Frequencies", ylim = c(0, max(d$freq) + 5),
+    ylab = "Frequencies", ylim = c(0, max(d$freq) + 5), # yaxp = c(0, max(d$freq) + 5, 10)
 )
 
 # Find words that appear more than 4 times
