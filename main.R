@@ -84,25 +84,42 @@ d <- data.frame(word = names(v), freq = v)
 set.seed(2645)
 
 # PDF settings
-pdf("wordcloud_packages.pdf")
+pdf("wordcloud.pdf")
 
 # The current graphic device (PDF)
 current_device <- dev.cur()
 
 # PNG settings
-png("wordcloud_packages.png", width = 12, height = 8, units = "in", res = 300)
+png("wordcloud.png", width = 12, height = 8, units = "in", res = 300)
 
 
 # Every device has a display list which records all of the graphics operations that occur in the device. dev.copy and dev.print copy graphics contents by copying the display list from one device to another device. Also, automatic redrawing of graphics contents following the resizing of a device depends on the contents of the display list.
 # After the command dev.control("inhibit"), graphics operations are not recorded in the display list so that dev.copy and dev.print will not copy anything and the contents of a device will not be redrawn automatically if the device is resized.
 dev.control("enable")
 
+# For the the graph (1 row, 2 colS)
+par(mfrow = c(1, 2))
+
 # Plot
-wordcloud(
+wc <- wordcloud(
     words = d$word, freq = d$freq, min.freq = 1,
     max.words = 200, random.order = FALSE, rot.per = 0.35,
     colors = brewer.pal(12, "Set3")
 )
+
+# Create a histogram of the top 10 most frequent words
+top10_word_histo <- barplot(d[1:10, ]$freq,
+    las = 2, names.arg = d[1:10, ]$word,
+    col = "lightblue", main = "Top 10 Most Frequent Words",
+    ylab = "Frequencies"
+)
+
+# Find words that appear more than 4 times
+print(findFreqTerms(dtm, lowfreq = 4))
+
+# Find terms that are associated with "freedom" with a correlation of > 0.3
+print(findAssocs(dtm, terms = "freedom", corlimit = 0.3))
+
 
 # Copies the graphics contents of the current device to the device specified by ‘which’
 dev.copy(which = current_device)
@@ -111,16 +128,3 @@ dev.copy(which = current_device)
 # to finish creating the image file
 dev.off()
 dev.off()
-
-# Find words that appear more than 4 times
-print(findFreqTerms(dtm, lowfreq = 4))
-
-# Find terms that are associated with "freedom" with a correlation of > 0.3
-print(findAssocs(dtm, terms = "freedom", corlimit = 0.3))
-
-# Create a histogram of the top 10 most frequent words
-barplot(d[1:10, ]$freq,
-    las = 2, names.arg = d[1:10, ]$word,
-    col = "lightblue", main = "Top 10 Most Frequent Words",
-    ylab = "Frequencies"
-)
