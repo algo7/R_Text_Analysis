@@ -31,7 +31,7 @@ data <- read.csv("./sample_tweets.csv", header = T)
 docs <- iconv(data$text)
 
 # Load the text as a corpus
-corpus <- VCorpus(VectorSource(docs))
+corpus <- Corpus(VectorSource(docs))
 
 # Text transformation / pre-processing
 # Function to substitute the given pattern with a white space
@@ -70,11 +70,16 @@ corpus <- tm_map(corpus, removeWords, c("rt"))
 # Remove english common stopwords
 corpus <- tm_map(corpus, removeWords, stopwords("english"))
 
+# Remove appl & apple => name of the stock
+corpus <- tm_map(corpus, removeWords, c("aapl", "apple"))
+
 # Remove urls
 corpus <- tm_map(corpus, remove_orphan_alphabet)
 
 # Eliminate extra white spaces
 corpus <- tm_map(corpus, stripWhitespace)
+
+
 
 # Build term-document matrix
 # Document matrix is a table containing the frequency of the words.
@@ -83,3 +88,15 @@ dtm <- TermDocumentMatrix(corpus)
 
 # Convert term doc matrix into matrix
 m <- as.matrix(dtm)
+
+# Sum the frequencies of all words
+word_freq <- rowSums(m)
+
+# Extract only the words with frequency greater than 25
+word_freq <- subset(word_freq, word_freq >= 25)
+
+# Plot it
+barplot(word_freq,
+    las = 2,
+    col = rainbow(50)
+)
