@@ -49,6 +49,9 @@ remove_url <- content_transformer(function(text) gsub(url_pattern, " ", text))
 # Function to substitute url user name to white space
 remove_user_name <- content_transformer(function(text) gsub("@(\\w+):", " ", text))
 
+# Function to substitute non-alpha-num chars to white space
+remove_special_chars <- function(text) gsub("[^a-z ]", " ", text)
+
 # Convert the text to lower case
 corpus <- tm_map(corpus, content_transformer(tolower))
 
@@ -58,20 +61,8 @@ corpus <- tm_map(corpus, remove_url)
 # Remove urls
 corpus <- tm_map(corpus, remove_user_name)
 
-# Remove /
-corpus <- tm_map(corpus, to_space, "/")
-
-# Remove @
-corpus <- tm_map(corpus, to_space, "@")
-
-# Remove |
-corpus <- tm_map(corpus, to_space, "\\|")
-
-# Remove $
-corpus <- tm_map(corpus, to_space, "\\$")
-
-# Remove numbers
-corpus <- tm_map(corpus, removeNumbers)
+# Remove all non-aphabet-numeric characters
+corpus <- tm_map(corpus, removeSpecialChars)
 
 # Remove rt, which is appended to the beginning of the tweet
 corpus <- tm_map(corpus, removeWords, c("rt"))
@@ -79,15 +70,10 @@ corpus <- tm_map(corpus, removeWords, c("rt"))
 # Remove english common stopwords
 corpus <- tm_map(corpus, removeWords, stopwords("english"))
 
-# Remove punctuations
-corpus <- tm_map(corpus, removePunctuation)
-
 # Remove urls
 corpus <- tm_map(corpus, remove_orphan_alphabet)
 
 # Eliminate extra white spaces
 corpus <- tm_map(corpus, stripWhitespace)
 
-
-
-inspect(corpus[1:5])
+inspect(corpus[1:10])
