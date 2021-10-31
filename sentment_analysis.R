@@ -28,10 +28,10 @@ data <- read.csv("./sample_tweets.csv", header = T)
 # str(data)
 
 # Extract the text column
-corpus <- iconv(data$text)
+docs <- iconv(data$text)
 
 # Load the text as a corpus
-corpus <- Corpus(VectorSource(corpus))
+corpus <- VCorpus(VectorSource(docs))
 
 # Text transformation / pre-processing
 # Function to substitute the given pattern with a white space
@@ -50,7 +50,7 @@ remove_url <- content_transformer(function(text) gsub(url_pattern, " ", text))
 remove_user_name <- content_transformer(function(text) gsub("@(\\w+):", " ", text))
 
 # Function to substitute non-alpha-num chars to white space
-remove_special_chars <- function(text) gsub("[^a-z ]", " ", text)
+remove_special_chars <- content_transformer(function(text) gsub("[^a-z ]", " ", text))
 
 # Convert the text to lower case
 corpus <- tm_map(corpus, content_transformer(tolower))
@@ -62,7 +62,7 @@ corpus <- tm_map(corpus, remove_url)
 corpus <- tm_map(corpus, remove_user_name)
 
 # Remove all non-aphabet-numeric characters
-corpus <- tm_map(corpus, removeSpecialChars)
+corpus <- tm_map(corpus, remove_special_chars)
 
 # Remove rt, which is appended to the beginning of the tweet
 corpus <- tm_map(corpus, removeWords, c("rt"))
@@ -76,4 +76,10 @@ corpus <- tm_map(corpus, remove_orphan_alphabet)
 # Eliminate extra white spaces
 corpus <- tm_map(corpus, stripWhitespace)
 
-inspect(corpus[1:10])
+# Build term-document matrix
+# Document matrix is a table containing the frequency of the words.
+# Column names are words and row names are documents
+dtm <- TermDocumentMatrix(corpus)
+
+# Convert term doc matrix into matrix
+m <- as.matrix(dtm)
