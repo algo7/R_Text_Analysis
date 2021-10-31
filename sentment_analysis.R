@@ -97,6 +97,8 @@ word_freq <- subset(word_freq, word_freq >= 25)
 
 # Plot it
 barplot(word_freq,
+    # axis lables perpendicular to the bars
     las = 2,
+    # Gradient
     col = rainbow(50)
 )
