@@ -159,7 +159,6 @@ corpus <- tm_map(corpus, remove_orphan_alphabet)
 corpus <- tm_map(corpus, stripWhitespace)
 
 
-
 # Build term-document matrix
 # Document matrix is a table containing the frequency of the words.
 # Column names are words and row names are documents
@@ -204,10 +203,10 @@ barplot(sentiment_sum,
 word_freq <- subset(word_freq, word_freq >= 25)
 
 # PDF settings
-par(mfrow = c(1, 2))
 pdf("sent.pdf", width = 12, height = 8, compress = F)
 
-
+# For the the graph (1 row, 2 cols)
+par(mfrow = c(1, 2))
 
 # Plot it
 sent1 <- barplot(word_freq,
