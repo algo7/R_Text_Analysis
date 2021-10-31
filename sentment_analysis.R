@@ -18,6 +18,9 @@ if (length(not_met_dependencies) != 0) {
     install.packages(not_met_dependencies)
 }
 
+# Load packages
+library("tm")
+
 # Load dataset
 data <- read.csv("./sample_tweets.csv", header = T)
 
