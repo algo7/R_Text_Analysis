@@ -87,9 +87,9 @@ print(all_places_geocoded)
 # Create a map using the geocoded data
 # Create an empty map canvas
 newmap <- getMap(resolution = "high")
+plot(newmap, asp = 1)
 
 # Add the geocoded data to the map
-plot(newmap, asp = 1)
 points(all_places_geocoded$lon,
     all_places_geocoded$lat,
     col = "red", cex = 1.2, pch = 19
@@ -99,10 +99,11 @@ points(all_places_geocoded$lon,
 walmart_person <- text[annot_l1[k == "person"]]
 walmart_organization <- text[annot_l1[k == "organization"]]
 
-# Remove duplicates in "person"
+# Remove duplicates in walmart_person
 walmart_person <- unique(walmart_person)
 
 # Remove deplicates between person, organization and locations
-# by calculating the set difference between them
+# by calculating the set difference person, organization and locations using
+# walmart_personas the base set
 walmart_person <- setdiff(walmart_person, walmart_organization)
 walmart_person <- setdiff(walmart_person, walmart_locations)
