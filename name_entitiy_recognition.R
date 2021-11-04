@@ -70,6 +70,7 @@ org_annot <- Maxent_Entity_Annotator(kind = "organization")
 annot_l1 <- NLP::annotate(text, list(sent_annot, word_annot, loc_annot, person_annot, org_annot))
 
 # Extract locations
+# Remove [[xxxx]]$kind string
 k <- sapply(annot_l1$features, `[[`, "kind")
 
 walmart_locations <- text[annot_l1[k == "location"]]
@@ -94,9 +95,14 @@ points(all_places_geocoded$lon,
     col = "red", cex = 1.2, pch = 19
 )
 
-# Extract person names
+# Extract person & organization names
 walmart_person <- text[annot_l1[k == "person"]]
 walmart_organization <- text[annot_l1[k == "organization"]]
+
+# Remove duplicates in "person"
 walmart_person <- unique(walmart_person)
+
+# Remove deplicates between person, organization and locations
+# by calculating the set difference between them
 walmart_person <- setdiff(walmart_person, walmart_organization)
 walmart_person <- setdiff(walmart_person, walmart_locations)
