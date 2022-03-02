@@ -60,7 +60,7 @@ remove_url <- content_transformer(function(text) gsub(url_pattern, " ", text))
 remove_user_name <- content_transformer(function(text) gsub("@(\\w+):", " ", text))
 
 # Function to substitute non-alpha-num chars to white space
-remove_special_chars <- content_transformer(function(text) gsub("[^a-z ]", " ", text))
+remove_special_chars <- content_transformer(function(text) gsub("[^a-z]", " ", text))
 
 # Convert the text to lower case
 corpus <- tm_map(corpus, content_transformer(tolower))
