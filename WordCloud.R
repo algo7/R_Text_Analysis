@@ -76,7 +76,8 @@ docs <- tm_map(docs, removeWords, c("hotel",
                                     "lake","rooms",
                                     "one","service",
                                     "palace","breakfast",
-                                    "lausanne","just"
+                                    "lausanne","just","also","can",
+                                    "every"
                                     ))
 
 # Build term-document matrix
@@ -110,12 +111,10 @@ wc <- wordcloud(
   colors = brewer.pal(12, "Set3")
 )
 
-# Wordcloud2 support, needs to be printed explicitly
-#wc2 <- wordcloud2(data = d, size = 1.6, color = "random-dark")
 
 # Create a histogram of the top 20 most frequent words
-top10_word_histo <- barplot(d[1:20, ]$freq,
-                            las = 2, names.arg = d[1:20, ]$word,
+top30_word_histo <- barplot(d[1:30, ]$freq,
+                            las = 2, names.arg = d[1:30, ]$word,
                             col = "lightblue", main = "Top 10 Most Frequent Words",
                             ylab = "Frequencies", ylim = c(0, max(d$freq) + 5), # yaxp = c(0, max(d$freq) + 5, 10)
 )
@@ -125,4 +124,8 @@ print(findFreqTerms(dtm, lowfreq = 50))
 
 # Find terms that are associated with "freedom" with a correlation of > 0.3
 print(findAssocs(dtm, terms = "lausanne", corlimit = 0.1))
+
+# Wordcloud2 support, needs to be printed explicitly
+#wc2 <- wordcloud2(data = d, size = 1.6, color = "random-dark")
+
 
