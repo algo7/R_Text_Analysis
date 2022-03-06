@@ -4,7 +4,7 @@ required_pkgs <- c(
   "wordcloud2"
 )
 
-# Empty list to hold dependencies that are not isntalled
+# Empty list to hold dependencies that are not installed
 not_met_dependencies <- c()
 
 # Check if required packages are installed
@@ -27,7 +27,7 @@ library("wordcloud2")
 library("RColorBrewer")
 
 # Load Data
-data <- read.csv("reviews.csv", header = T)
+data <- read.csv("beau_rivage_palace_reviews.csv", header = T)
 
 # Convert the raw data to a data frame
 data <- as.data.frame(data)
@@ -45,29 +45,19 @@ docs <- VCorpus(VectorSource(contents))
 # Function to substitute the given pattern with a white space
 to_space <- content_transformer(function(text, pattern) gsub(pattern, " ", text))
 
-# Eliminate extra white spaces
-docs <- tm_map(docs, stripWhitespace)
-
-# Remove /
-docs <- tm_map(docs, to_space, "/")
-
-# Remove @
-docs <- tm_map(docs, to_space, "@")
-
-# Remove |
-docs <- tm_map(docs, to_space, "\\|")
-
 # Convert the text to lower case
 docs <- tm_map(docs, content_transformer(tolower))
 
-# Remove numbers
-docs <- tm_map(docs, removeNumbers)
+# Eliminate extra white spaces
+docs <- tm_map(docs, stripWhitespace)
 
-# Remove english common stopwords
+# Remove numbers and punctuations
+docs <- tm_map(docs, to_space, '[[:punct:] ]+')
+docs <- tm_map(docs, to_space, '[[:digit:] ]+')
+
+# Remove english common stop words
 docs <- tm_map(docs, removeWords, stopwords("english"))
 
-# Remove punctuations
-docs <- tm_map(docs, removePunctuation)
 
 # Remove your own stop word
 # specify your stopwords as a character vector
@@ -85,7 +75,7 @@ docs <- tm_map(docs, removeWords, c(
 # Document matrix is a table containing the frequency of the words.
 # Column names are words and row names are documents
 dtm <- TermDocumentMatrix(docs)
-
+k<-as.data.frame(as.matrix(dtm))
 # Convert term doc matrix into matrix
 m <- as.matrix(dtm)
 
@@ -97,15 +87,12 @@ d <- data.frame(word = names(v), freq = v)
 set.seed(2645)
 
 
-# For the the graph (1 row, 2 cols)
-# par(mfrow = c(1, 2))
-
 # WC Plot
 wc <- wordcloud(
   words = d$word,
   freq = d$freq,
   min.freq = 50,
-  max.words = 200,
+  max.words = 100,
   # Graphic Stuff
   random.order = FALSE,
   rot.per = 0.35,
