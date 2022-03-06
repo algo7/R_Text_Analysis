@@ -105,7 +105,7 @@ wc <- wordcloud(
 )
 
 
-# Create a histogram of the top 20 most frequent words
+# Create a histogram of the top 30 most frequent words
 top30_word_histo <- barplot(
   height=d[1:30, ]$freq,
   # Label for each bar
