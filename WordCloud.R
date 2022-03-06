@@ -1,4 +1,6 @@
-# List of required pacakges
+# Set seed => all graphs will look the same given the same input
+set.seed(2645)
+# List of required packages
 required_pkgs <- c(
   "tm", "SnowballC", "wordcloud", "RColorBrewer",
   "wordcloud2"
@@ -26,6 +28,7 @@ library("wordcloud")
 library("wordcloud2")
 library("RColorBrewer")
 
+######## Start Here ##########
 # Load Data
 data <- read.csv("beau_rivage_palace_reviews.csv", header = T)
 
@@ -51,16 +54,15 @@ docs <- tm_map(docs, content_transformer(tolower))
 # Eliminate extra white spaces
 docs <- tm_map(docs, stripWhitespace)
 
-# Remove numbers and punctuations
+# Remove numbers and punctuation
 docs <- tm_map(docs, to_space, '[[:punct:] ]+')
 docs <- tm_map(docs, to_space, '[[:digit:] ]+')
 
-# Remove english common stop words
+# Remove English common stop words
 docs <- tm_map(docs, removeWords, stopwords("english"))
 
-
 # Remove your own stop word
-# specify your stopwords as a character vector
+# specify your stop words as a character vector
 docs <- tm_map(docs, removeWords, c(
   "hotel",
   "staff", "room",
@@ -75,16 +77,19 @@ docs <- tm_map(docs, removeWords, c(
 # Document matrix is a table containing the frequency of the words.
 # Column names are words and row names are documents
 dtm <- TermDocumentMatrix(docs)
-k<-as.data.frame(as.matrix(dtm))
+
 # Convert term doc matrix into matrix
 m <- as.matrix(dtm)
 
+# Sort the matrix and convert it into a numeric vector
 v <- sort(rowSums(m), decreasing = TRUE)
 
 # Convert the vector into a data frame
 d <- data.frame(word = names(v), freq = v)
 
-set.seed(2645)
+
+# Write to CSV
+write.csv(d,'beau_rivage_palace_dtm.csv',row.names = F)
 
 
 # WC Plot
@@ -101,16 +106,25 @@ wc <- wordcloud(
 
 
 # Create a histogram of the top 20 most frequent words
-top30_word_histo <- barplot(d[1:30, ]$freq,
-  las = 2, names.arg = d[1:30, ]$word,
-  col = "lightblue", main = "Top 10 Most Frequent Words",
-  ylab = "Frequencies", ylim = c(0, max(d$freq) + 5), # yaxp = c(0, max(d$freq) + 5, 10)
+top30_word_histo <- barplot(
+  height=d[1:30, ]$freq,
+  # Label for each bar
+  names.arg = d[1:30, ]$word,
+  # Titles
+  main = "Top 30 Most Frequent Words",
+  # Y-axis label
+  ylab = "Frequencies", 
+  # Graphic stuff
+  las = 2,
+  col = "lightblue", 
+  ylim = c(0, max(d$freq) + 5)
 )
 
-# Find words that appear more than 4 times
+########## Bonus
+# Find words that appear more than 50 times
 print(findFreqTerms(dtm, lowfreq = 50))
 
-# Find terms that are associated with "freedom" with a correlation of > 0.3
+# Find terms that are associated with "good" with a correlation of > 0.1
 print(findAssocs(dtm, terms = "good", corlimit = 0.1))
 
 # Wordcloud2 support, needs to be printed explicitly
