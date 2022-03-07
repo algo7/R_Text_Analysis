@@ -49,16 +49,16 @@ wc <- wordcloud(
 
 # Bar plot of the top 30 most frequent words
 top30_word_histo <- barplot(
-  height=d[1:30, ]$freq,
+  height = d[1:30, ]$freq,
   # Label for each bar
   names.arg = d[1:30, ]$word,
   # Titles
   main = "Top 30 Most Frequent Words",
   # Y-axis label
-  ylab = "Frequencies", 
+  ylab = "Frequencies",
   # Graphic stuff
   las = 2,
-  col = "lightblue", 
+  col = "lightblue",
   ylim = c(0, max(d$freq) + 5)
 )
 
