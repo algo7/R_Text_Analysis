@@ -60,10 +60,12 @@ docs <- tm_map(docs, removeWords, stopwords("english"))
 # specify your stop words as a character vector
 docs <- tm_map(docs, removeWords, c(
   "lake","always",
-  "one","per",
-  "palace",
+  "one","per","hotel","rooms",
+  "palace","staff","room",
   "just", "also", "can",
-  "every"
+  "every","although","get",
+  "even","will","radissons",
+  "radisson"
 ))
 
 # Build term-document matrix
@@ -75,15 +77,15 @@ dtm <- TermDocumentMatrix(docs)
 m <- as.matrix(dtm)
 
 # Sum the frequencies of all words
-word_freq <- rowSums(m)
+word_freq <- sort(rowSums(m),decreasing = T)
 
-# Extract only the words with frequency greater than 60
-word_freq <- subset(word_freq, word_freq >= 5)
+# Extract only the words with frequency greater than 170
+word_freq <- subset(word_freq, word_freq >= 170)
 
 # Plot it
 sent1 <- barplot(
     height = word_freq,
-    main = "World Frequencies",
+    main = "Word Frequencies",
     ylab = "Count",
     names.arg = names(word_freq),
     # Space between axis labels perpendicular to the bars

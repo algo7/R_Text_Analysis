@@ -67,8 +67,8 @@ docs <- tm_map(docs, removeWords, stopwords("english"))
 # specify your stop words as a character vector
 docs <- tm_map(docs, removeWords, c(
   "lake","always",
-  "one","per",
-  "palace",
+  "one","per", "room","staff",
+  "palace","hotel","rooms",
   "lausanne", "just", "also", "can",
   "every"
 ))
@@ -107,11 +107,11 @@ wc <- wordcloud(
 
 # Create a bar plot of the top 30 most frequent words
 top30_word_histo <- barplot(
-  height = d[1:20, ]$freq,
+  height = d[1:30, ]$freq,
   # Label for each bar
-  names.arg = d[1:20, ]$word,
+  names.arg = d[1:30, ]$word,
   # Titles
-  main = "Top 20 Most Frequent Words",
+  main = "Top 30 Most Frequent Words",
   # Y-axis label
   ylab = "Frequencies",
   # Graphic stuff
