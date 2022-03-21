@@ -22,10 +22,11 @@ if (length(not_met_dependencies) != 0) {
 library("tm")
 library("syuzhet")
 
+
 ######## Start Here ##########
 
 # Load data set
-data <- read.csv("./beau_rivage_palace_reviews.csv", header = T)
+data <- read.csv(file.choose(), header = T)
 
 # Extract the text column
 docs <- iconv(data$content)
@@ -55,6 +56,16 @@ docs <- tm_map(docs, to_space, "[[:digit:] ]+")
 # Remove English common stop words
 docs <- tm_map(docs, removeWords, stopwords("english"))
 
+# Remove your own stop word
+# specify your stop words as a character vector
+docs <- tm_map(docs, removeWords, c(
+  "lake","always",
+  "one","per",
+  "palace",
+  "just", "also", "can",
+  "every"
+))
+
 # Build term-document matrix
 # Document matrix is a table containing the frequency of the words.
 # Column names are words and row names are documents
@@ -67,7 +78,7 @@ m <- as.matrix(dtm)
 word_freq <- rowSums(m)
 
 # Extract only the words with frequency greater than 60
-word_freq <- subset(word_freq, word_freq >= 60)
+word_freq <- subset(word_freq, word_freq >= 5)
 
 # Plot it
 sent1 <- barplot(
@@ -92,13 +103,13 @@ sentiment_scores <- get_nrc_sentiment(names(word_freq), language = "english")
 
 # Sum the sentiment score matrix
 sentiment_sum <- colSums(sentiment_scores)
-
+sentiment_sum<-sort(sentiment_sum,decreasing = TRUE)
 # Plot it
 sent2 <- barplot(sentiment_sum,
     las = 2,
     col = rainbow(10),
     ylab = "Count",
-    main = "Sentiment Scores Tweets",
+    main = "Sentiment Scores Comment",
     ylim = c(0, max(sentiment_sum) * 1.1)
 )
 
@@ -108,3 +119,4 @@ text(sent2,
     labels = sentiment_sum,
     pos = 3
 )
+

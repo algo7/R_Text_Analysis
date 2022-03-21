@@ -31,10 +31,10 @@ library("RColorBrewer")
 
 ######## Start Here ##########
 # Load Data
-data <- read.csv("./Data/beau_rivage_palace_reviews.csv", header = T)
+data <- read.csv(file.choose(), header = T)
 
 # Extract the title
-titles <- iconv(data$title)
+# titles <- iconv(data$title)
 
 # Extract the content
 contents <- iconv(data$content)
@@ -66,11 +66,9 @@ docs <- tm_map(docs, removeWords, stopwords("english"))
 # Remove your own stop word
 # specify your stop words as a character vector
 docs <- tm_map(docs, removeWords, c(
-  "hotel",
-  "staff", "room",
-  "lake", "rooms",
-  "one", "service",
-  "palace", "breakfast",
+  "lake","always",
+  "one","per",
+  "palace",
   "lausanne", "just", "also", "can",
   "every"
 ))
@@ -91,14 +89,14 @@ d <- data.frame(word = names(v), freq = v)
 
 
 # Write to CSV
-write.csv(d, "beau_rivage_palace_dtm.csv", row.names = F)
+#write.csv(d, "beau_rivage_palace_dtm.csv", row.names = F)
 
 
 # WC Plot
 wc <- wordcloud(
   words = d$word,
   freq = d$freq,
-  min.freq = 50,
+  min.freq = 5,
   max.words = 100,
   # Graphic Stuff
   random.order = FALSE,
@@ -109,11 +107,11 @@ wc <- wordcloud(
 
 # Create a bar plot of the top 30 most frequent words
 top30_word_histo <- barplot(
-  height = d[1:30, ]$freq,
+  height = d[1:20, ]$freq,
   # Label for each bar
-  names.arg = d[1:30, ]$word,
+  names.arg = d[1:20, ]$word,
   # Titles
-  main = "Top 30 Most Frequent Words",
+  main = "Top 20 Most Frequent Words",
   # Y-axis label
   ylab = "Frequencies",
   # Graphic stuff
