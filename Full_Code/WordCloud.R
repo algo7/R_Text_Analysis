@@ -70,7 +70,7 @@ docs <- tm_map(docs, removeWords, c(
   "one","per", "room","staff",
   "palace","hotel","rooms",
   "lausanne", "just", "also", "can",
-  "every"
+  "every","rivage"
 ))
 
 # Build term-document matrix
@@ -101,7 +101,7 @@ wc <- wordcloud(
   # Graphic Stuff
   random.order = FALSE,
   rot.per = 0.35,
-  colors = brewer.pal(12, "Set3")
+  colors = brewer.pal(9, "Set1")
 )
 
 
