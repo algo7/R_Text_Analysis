@@ -100,13 +100,3 @@ top30_word_histo <- barplot(
   col = "lightblue",
   ylim = c(0, max(d$freq) + 5)
 )
-
-######## Bonus ##########
-# Find words that appear more than 50 times
-print(findFreqTerms(dtm, lowfreq = 50))
-
-# Find terms that are associated with "good" with a correlation of > 0.1
-print(findAssocs(dtm, terms = "good", corlimit = 0.1))
-
-# Wordcloud2 support, needs to be printed explicitly
-# wc2 <- wordcloud2(data = d, size = 1.6, color = "random-dark")
