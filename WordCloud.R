@@ -1,3 +1,9 @@
+################################
+#                             ##
+#    Install Packages         ##
+#                             ##
+################################
+
 # Set seed => all graphs will look the same given the same input
 set.seed(2645)
 # List of required packages
@@ -28,12 +34,45 @@ library("wordcloud")
 library("wordcloud2")
 library("RColorBrewer")
 
-######## Start Here ##########
+################################
+#                             ##
+#          START HERE         ##
+#                             ##
+################################
 
 
 
 
-######## Graphs ##########
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+################################
+#                             ##
+#        STOP HERE            ##
+#                             ##
+#    Graphic Settings         ##
+#                             ##
+################################
+
 # World Cloud
 wc <- wordcloud(
   words = d$word,
@@ -43,7 +82,7 @@ wc <- wordcloud(
   # Graphic Stuff
   random.order = FALSE,
   rot.per = 0.35,
-  colors = brewer.pal(12, "Set3")
+  colors = brewer.pal(9, "Set1")
 )
 
 

@@ -27,6 +27,7 @@ if (length(not_met_dependencies) != 0) {
 # Load packages
 library("tm")
 library("syuzhet")
+
 ################################
 #                             ##
 #          START HERE         ##
@@ -34,12 +35,40 @@ library("syuzhet")
 ################################
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ################################
+#                             ##
 #        STOP HERE            ##
 #                             ##
 #    Graphic Settings         ##
 #                             ##
 ################################
+
 # Plot it
 sent1 <- barplot(
   height = word_freq,
