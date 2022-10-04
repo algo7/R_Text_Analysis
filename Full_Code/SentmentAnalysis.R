@@ -65,7 +65,7 @@ docs <- tm_map(docs, removeWords, c(
   "just", "also", "can",
   "every","although","get",
   "even","will","radissons",
-  "radisson"
+  "radisson","rivage"
 ))
 
 # Build term-document matrix
