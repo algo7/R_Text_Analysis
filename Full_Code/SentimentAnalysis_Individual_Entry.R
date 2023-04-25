@@ -1,6 +1,6 @@
 # List of required packages
 required_pkgs <- c(
-    "tm", "syuzhet"
+    "tm", "syuzhet","tidyr"
 )
 
 # Empty list to hold dependencies that are not installed
@@ -21,6 +21,7 @@ if (length(not_met_dependencies) != 0) {
 # Load packages
 library("tm")
 library("syuzhet")
+library("tidyr")
 
 
 ######## Start Here ##########
@@ -72,28 +73,12 @@ docs <- tm_map(docs, removeWords, c(
 # Convert VCorpus to data frame
 df<- data.frame(text=sapply(docs, as.character))
 
+# Apply the get_nrc_sentiment function to the text column and create a new column
+df$sentiment <- lapply(df$text, get_nrc_sentiment)
 
-# Uses National Research Council Canada (NRC)  Emotion lexicon
-# with eight emotions (anger, fear, anticipation, trust, surprise, sadness, joy, and disgust)
-# and two sentiments (negative and positive)
-sentiment_scores <- get_nrc_sentiment(names(word_freq), language = "english")
+# Convert the sentiment column to separate columns
+df <- df %>%
+  unnest_wider(sentiment)
 
-# Sum the sentiment score matrix
-sentiment_sum <- colSums(sentiment_scores)
-sentiment_sum<-sort(sentiment_sum,decreasing = TRUE)
-# Plot it
-sent2 <- barplot(sentiment_sum,
-    las = 2,
-    col = rainbow(10),
-    ylab = "Count",
-    main = "Sentiment Scores Comment",
-    ylim = c(0, max(sentiment_sum) * 1.1)
-)
 
-# Add actual value on top of the bars
-text(sent2,
-    sentiment_sum,
-    labels = sentiment_sum,
-    pos = 3
-)
 
