@@ -80,5 +80,8 @@ df$sentiment <- lapply(df$text, get_nrc_sentiment)
 df <- df %>%
   unnest_wider(sentiment)
 
+# Save the dataframe to a CSV file
+write.csv(df, file = "results.csv", row.names = FALSE)
+
 
 
