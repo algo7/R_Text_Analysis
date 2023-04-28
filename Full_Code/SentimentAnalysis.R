@@ -65,7 +65,8 @@ docs <- tm_map(docs, removeWords, c(
   "just", "also", "can",
   "every","although","get",
   "even","will","radissons",
-  "radisson","rivage"
+  "radisson","rivage","pool","view","stay",
+  "back","thomas","property","back","island","day","hill"
 ))
 
 # Build term-document matrix
@@ -80,7 +81,7 @@ m <- as.matrix(dtm)
 word_freq <- sort(rowSums(m),decreasing = T)
 
 # Extract only the words with frequency greater than 170
-word_freq <- subset(word_freq, word_freq >= 170)
+word_freq <- subset(word_freq, word_freq >= 120)
 
 # Plot it
 sent1 <- barplot(
@@ -121,4 +122,25 @@ text(sent2,
     labels = sentiment_sum,
     pos = 3
 )
+
+
+# Load ggplot2 package
+library("ggplot2")
+
+# Word Frequencies plot
+word_freq_df <- data.frame(words = names(word_freq), freq = word_freq)
+ggplot(word_freq_df, aes(x = reorder(words, -freq), y = freq)) +
+  geom_bar(stat = "identity", fill = rainbow(50)) +
+  geom_text(aes(label = freq), vjust = -0.5, size = 3) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(title = "Word Frequencies", x = "Terms", y = "Count")
+
+# Sentiment Scores plot
+sentiment_sum_df <- data.frame(sentiments = names(sentiment_sum), scores = sentiment_sum)
+ggplot(sentiment_sum_df, aes(x = reorder(sentiments, -scores), y = scores)) +
+  geom_bar(stat = "identity", fill = rainbow(10)) +
+  geom_text(aes(label = scores), vjust = -0.5, size = 3) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(title = "Sentiment Scores Comment", x = "Terms", y = "Count")
+
 
