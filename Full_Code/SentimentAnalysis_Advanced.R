@@ -148,7 +148,7 @@ ggplot(sentiment_sum_df, aes(x = reorder(sentiments, -scores), y = scores)) +
   geom_bar(stat = "identity", fill = rainbow(10)) +
   geom_text(aes(label = scores), vjust = -0.5, size = 3) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1,size=15)) +
-  labs(title = "NRC Sentiment Analysis of Comments", x = "Terms", y = "Count")+
+  labs(title = "NRC Sentiment Analysis of All Comments", x = "Terms", y = "Count")+
   ylim(0, max(sentiment_sum_df$scores) * 1.1)
 
 
