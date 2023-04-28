@@ -51,26 +51,26 @@ to_space <- content_transformer(
 )
 
 # Function to remove all english nouns
-remove_nouns_verbs <- content_transformer(function(text) {
-  
+remove_undesired_pos <- content_transformer(function(text) {
+
     # Annotate the text using the UDPipe model
     annotation <- udpipe_annotate(ud_model, text)
- 
+
     # Convert the annotation to a data frame
     annotation_df <- as.data.frame(annotation)
 
-    # Filter out nouns
-    non_nouns_and_verbs <- subset(annotation_df, upos != "NOUN" & upos != "PROPN" & upos !="VERB")
+    # Filter undesired POS
+    filtered <- subset(annotation_df, 
+                       !(upos %in% c("NOUN", "PROPN", "VERB", "PRON", "NUM", "INTJ", "AUX", "CCONJ", "ADP", "X")))
+    # print(paste("Filtered POS tags:", paste(filtered$upos, collapse = ", ")))
 
-    # Combine the non-nouns into a single string
+    
+    # Combine the processed data into a single string
     # collapse is required other wise each non-nouns will be an individual
     # element in the character vector while a document is a string
-    paste(non_nouns_and_verbs$token, collapse = " ")
+    paste(filtered$token, collapse = " ")
 })
 
-
-# Replace 'docs' with the name of your corpus variable
-docs <- tm_map(docs, remove_nouns_verbs)
 
 # Convert the text to lower case
 docs <- tm_map(docs, content_transformer(tolower))
@@ -82,9 +82,11 @@ docs <- tm_map(docs, stripWhitespace)
 docs <- tm_map(docs, to_space, "[[:punct:] ]+")
 docs <- tm_map(docs, to_space, "[[:digit:] ]+")
 
-
 # Remove English common stop words
 docs <- tm_map(docs, removeWords, stopwords("english"))
+
+# Remove nouns, pronouns, verb, interjections, numbers, and proper nouns
+docs <- tm_map(docs, remove_undesired_pos)
 
 # Remove your own stop word
 # specify your stop words as a character vector
@@ -98,6 +100,7 @@ docs <- tm_map(docs, removeWords, c(
   "radisson","rivage","pool","view","stay",
   "back","thomas","property","back","island","day","hill","got",
   "resort","views","time","place","two","first","front","much","stayed",
+  "really","around","everything", "also"
 ))
 
 # Build term-document matrix
@@ -125,23 +128,6 @@ ggplot(word_freq_df, aes(x = reorder(words, -freq), y = freq)) +
 
 
 
-# Uses National Research Council Canada (NRC)  Emotion lexicon
-# with eight emotions (anger, fear, anticipation, trust, surprise, sadness, joy, and disgust)
-# and two sentiments (negative and positive)
-sentiment_scores <- get_nrc_sentiment(names(word_freq), language = "english")
-
-# Sum the sentiment score matrix
-sentiment_sum <- colSums(sentiment_scores)
-sentiment_sum<-sort(sentiment_sum,decreasing = TRUE)
-
-# Sentiment Scores plot
-sentiment_sum_df <- data.frame(sentiments = names(sentiment_sum), scores = sentiment_sum)
-ggplot(sentiment_sum_df, aes(x = reorder(sentiments, -scores), y = scores)) +
-  geom_bar(stat = "identity", fill = rainbow(10)) +
-  geom_text(aes(label = scores), vjust = -0.5, size = 3) +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  labs(title = "Sentiment Scores Comment", x = "Terms", y = "Count")
-
 
 # For the entire doc-term matrix
 # Uses National Research Council Canada (NRC)  Emotion lexicon
@@ -164,3 +150,18 @@ ggplot(sentiment_sum_df, aes(x = reorder(sentiments, -scores), y = scores)) +
   ylim(0, max(sentiment_sum_df$scores) * 1.1)
 
 
+
+# For the most frequent words defined above
+sentiment_scores <- get_nrc_sentiment(names(word_freq), language = "english")
+
+# Sum the sentiment score matrix
+sentiment_sum <- colSums(sentiment_scores)
+sentiment_sum<-sort(sentiment_sum,decreasing = TRUE)
+
+# Sentiment Scores plot
+sentiment_sum_df <- data.frame(sentiments = names(sentiment_sum), scores = sentiment_sum)
+ggplot(sentiment_sum_df, aes(x = reorder(sentiments, -scores), y = scores)) +
+  geom_bar(stat = "identity", fill = rainbow(10)) +
+  geom_text(aes(label = scores), vjust = -0.5, size = 3) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(title = "Sentiment Scores Comment", x = "Terms", y = "Count")
