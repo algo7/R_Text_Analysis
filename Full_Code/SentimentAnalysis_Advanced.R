@@ -114,8 +114,10 @@ m <- as.matrix(dtm)
 # Sum the frequencies of all words
 word_freq <- sort(rowSums(m),decreasing = T)
 
+limit <- 100
+
 # Extract only the words with frequency greater than 170
-word_freq <- subset(word_freq, word_freq >= 100)
+word_freq <- subset(word_freq, word_freq >= limit)
 
 
 # Word Frequencies plot
@@ -124,7 +126,7 @@ ggplot(word_freq_df, aes(x = reorder(words, -freq), y = freq)) +
   geom_bar(stat = "identity", fill = rainbow(length(word_freq))) +
   geom_text(aes(label = freq), vjust = -0.5, size = 3) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  labs(title = "Word Frequencies", x = "Terms", y = "Count")
+  labs(title = paste("Frequent Terms (Occurrence >= ", limit,")"), x = "Terms", y = "Count")
 
 
 
@@ -146,7 +148,7 @@ ggplot(sentiment_sum_df, aes(x = reorder(sentiments, -scores), y = scores)) +
   geom_bar(stat = "identity", fill = rainbow(10)) +
   geom_text(aes(label = scores), vjust = -0.5, size = 3) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1,size=15)) +
-  labs(title = "Distribution of Sentiment Categories for All Comments", x = "Terms", y = "Count")+
+  labs(title = "NRC Sentiment Analysis of Comments", x = "Terms", y = "Count")+
   ylim(0, max(sentiment_sum_df$scores) * 1.1)
 
 
