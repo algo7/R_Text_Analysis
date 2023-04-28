@@ -1,6 +1,6 @@
 # List of required packages
 required_pkgs <- c(
-    "tm", "syuzhet","openNLP", "openNLPdata", "NLP"
+    "tm", "syuzhet"
 )
 
 # Empty list to hold dependencies that are not installed
@@ -124,65 +124,5 @@ text(sent2,
     pos = 3
 )
 
-
-# Load ggplot2 package
-library("ggplot2")
-
-# Word Frequencies plot
-word_freq_df <- data.frame(words = names(word_freq), freq = word_freq)
-ggplot(word_freq_df, aes(x = reorder(words, -freq), y = freq)) +
-  geom_bar(stat = "identity", fill = rainbow(50)) +
-  geom_text(aes(label = freq), vjust = -0.5, size = 3) +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  labs(title = "Word Frequencies", x = "Terms", y = "Count")
-
-# Sentiment Scores plot
-sentiment_sum_df <- data.frame(sentiments = names(sentiment_sum), scores = sentiment_sum)
-ggplot(sentiment_sum_df, aes(x = reorder(sentiments, -scores), y = scores)) +
-  geom_bar(stat = "identity", fill = rainbow(10)) +
-  geom_text(aes(label = scores), vjust = -0.5, size = 3) +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  labs(title = "Sentiment Scores Comment", x = "Terms", y = "Count")
-
-
-# For the entire doc-term matrix
-# Uses National Research Council Canada (NRC)  Emotion lexicon
-# with eight emotions (anger, fear, anticipation, trust, surprise, sadness, joy, and disgust)
-# and two sentiments (negative and positive)
-sentiment_scores_all <- get_nrc_sentiment(rownames(m), language = "english")
-
-# Sum the sentiment score matrix
-sentiment_sum_all <- colSums(sentiment_scores_all)
-sentiment_sum_all <-sort(sentiment_sum_all,decreasing = TRUE)
-# Plot it
-sent3 <- barplot(sentiment_sum,
-                 las = 2,
-                 col = rainbow(10),
-                 ylab = "Count",
-                 main = "Sentiment Scores Comment",
-                 ylim = c(0, max(sentiment_sum_all) * 1.1)
-)
-
-# Add actual value on top of the bars
-text(sent3,
-     sentiment_sum,
-     labels = sentiment_sum,
-     pos = 3
-)
-
-
-# Load ggplot2 package
-library("ggplot2")
-
-
-
-# Sentiment Scores plot
-sentiment_sum_df <- data.frame(sentiments = names(sentiment_sum_all), scores = sentiment_sum_all)
-ggplot(sentiment_sum_df, aes(x = reorder(sentiments, -scores), y = scores)) +
-  geom_bar(stat = "identity", fill = rainbow(10)) +
-  geom_text(aes(label = scores), vjust = -0.5, size = 3) +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1,size=15)) +
-  labs(title = "Sentiment Scores Comment", x = "Terms", y = "Count")+
-  ylim(0, max(sentiment_sum_df$scores) * 1.1)
 
 
