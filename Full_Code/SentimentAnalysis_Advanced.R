@@ -51,7 +51,7 @@ to_space <- content_transformer(
 )
 
 # Function to remove all english nouns
-remove_nouns_transformer <- content_transformer(function(text) {
+remove_nouns_verbs <- content_transformer(function(text) {
   
     # Annotate the text using the UDPipe model
     annotation <- udpipe_annotate(ud_model, text)
@@ -60,17 +60,17 @@ remove_nouns_transformer <- content_transformer(function(text) {
     annotation_df <- as.data.frame(annotation)
 
     # Filter out nouns
-    non_nouns <- subset(annotation_df, upos != "NOUN" & upos != "PROPN")
+    non_nouns_and_verbs <- subset(annotation_df, upos != "NOUN" & upos != "PROPN" & upos !="VERB")
 
     # Combine the non-nouns into a single string
     # collapse is required other wise each non-nouns will be an individual
     # element in the character vector while a document is a string
-    paste(non_nouns$token, collapse = " ")
+    paste(non_nouns_and_verbs$token, collapse = " ")
 })
 
 
 # Replace 'docs' with the name of your corpus variable
-docs <- tm_map(docs, remove_nouns_transformer)
+docs <- tm_map(docs, remove_nouns_verbs)
 
 # Convert the text to lower case
 docs <- tm_map(docs, content_transformer(tolower))
@@ -88,17 +88,17 @@ docs <- tm_map(docs, removeWords, stopwords("english"))
 
 # Remove your own stop word
 # specify your stop words as a character vector
-# docs <- tm_map(docs, removeWords, c(
-#   "lake","always",
-#   "one","per","hotel","rooms",
-#   "palace","staff","room",
-#   "just", "also", "can",
-#   "every","although","get",
-#   "even","will","radissons",
-#   "radisson","rivage","pool","view","stay",
-#   "back","thomas","property","back","island","day","hill",
-#   "resort","views","time","place"
-# ))
+docs <- tm_map(docs, removeWords, c(
+  "lake","always",
+  "one","per","hotel","rooms",
+  "palace","staff","room",
+  "just", "also", "can",
+  "every","although","get",
+  "even","will","radissons",
+  "radisson","rivage","pool","view","stay",
+  "back","thomas","property","back","island","day","hill","got",
+  "resort","views","time","place","two","first","front","much","stayed",
+))
 
 # Build term-document matrix
 # Document matrix is a table containing the frequency of the words.
@@ -112,7 +112,7 @@ m <- as.matrix(dtm)
 word_freq <- sort(rowSums(m),decreasing = T)
 
 # Extract only the words with frequency greater than 170
-word_freq <- subset(word_freq, word_freq >= 120)
+word_freq <- subset(word_freq, word_freq >= 100)
 
 
 # Word Frequencies plot
