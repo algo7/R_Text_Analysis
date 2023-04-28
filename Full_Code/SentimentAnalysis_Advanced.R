@@ -118,7 +118,7 @@ word_freq <- subset(word_freq, word_freq >= 120)
 # Word Frequencies plot
 word_freq_df <- data.frame(words = names(word_freq), freq = word_freq)
 ggplot(word_freq_df, aes(x = reorder(words, -freq), y = freq)) +
-  geom_bar(stat = "identity", fill = rainbow(50)) +
+  geom_bar(stat = "identity", fill = rainbow(length(word_freq))) +
   geom_text(aes(label = freq), vjust = -0.5, size = 3) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   labs(title = "Word Frequencies", x = "Terms", y = "Count")
@@ -160,7 +160,7 @@ ggplot(sentiment_sum_df, aes(x = reorder(sentiments, -scores), y = scores)) +
   geom_bar(stat = "identity", fill = rainbow(10)) +
   geom_text(aes(label = scores), vjust = -0.5, size = 3) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1,size=15)) +
-  labs(title = "Sentiment Scores Comment", x = "Terms", y = "Count")+
+  labs(title = "Sentiment Scores All Comment", x = "Terms", y = "Count")+
   ylim(0, max(sentiment_sum_df$scores) * 1.1)
 
 
