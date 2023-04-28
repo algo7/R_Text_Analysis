@@ -1,6 +1,6 @@
 # List of required packages
 required_pkgs <- c(
-    "tm", "syuzhet"
+    "tm", "syuzhet","openNLP", "openNLPdata", "NLP"
 )
 
 # Empty list to hold dependencies that are not installed
@@ -22,7 +22,6 @@ if (length(not_met_dependencies) != 0) {
 library("tm")
 library("syuzhet")
 
-
 ######## Start Here ##########
 
 # Load data set
@@ -41,6 +40,7 @@ to_space <- content_transformer(
         gsub(pattern, " ", text)
     }
 )
+
 
 # Convert the text to lower case
 docs <- tm_map(docs, content_transformer(tolower))
@@ -66,7 +66,8 @@ docs <- tm_map(docs, removeWords, c(
   "every","although","get",
   "even","will","radissons",
   "radisson","rivage","pool","view","stay",
-  "back","thomas","property","back","island","day","hill"
+  "back","thomas","property","back","island","day","hill",
+  "resort","views","time","place"
 ))
 
 # Build term-document matrix
