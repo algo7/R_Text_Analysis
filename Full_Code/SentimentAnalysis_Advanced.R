@@ -1,6 +1,6 @@
 # List of required packages
 required_pkgs <- c(
-    "tm", "syuzhet","openNLP", "openNLPdata", "NLP"
+    "tm", "syuzhet","ggplot2","udpipe"
 )
 
 # Empty list to hold dependencies that are not installed
@@ -21,6 +21,14 @@ if (length(not_met_dependencies) != 0) {
 # Load packages
 library("tm")
 library("syuzhet")
+library("ggplot2")
+library("udpipe")
+
+# Download the english lang model for udpipe
+ud_model <- udpipe_download_model(language = "english")
+
+# Load model
+ud_model <- udpipe_load_model(ud_model$file_model)
 
 ######## Start Here ##########
 
@@ -34,6 +42,7 @@ docs <- iconv(data$content)
 docs <- VCorpus(VectorSource(docs))
 
 # Text transformation / pre-processing
+
 # Function to substitute the given pattern with a white space
 to_space <- content_transformer(
     function(text, pattern) {
@@ -41,13 +50,27 @@ to_space <- content_transformer(
     }
 )
 
-remove_nouns_transformer <- content_transformer(function(x, model) {
-  remove_nouns(x, model)
+# Function to remove all english nouns
+remove_nouns_transformer <- content_transformer(function(text) {
+  
+    # Annotate the text using the UDPipe model
+    annotation <- udpipe_annotate(ud_model, text)
+ 
+    # Convert the annotation to a data frame
+    annotation_df <- as.data.frame(annotation)
+
+    # Filter out nouns
+    non_nouns <- subset(annotation_df, upos != "NOUN" & upos != "PROPN")
+
+    # Combine the non-nouns into a single string
+    # collapse is required other wise each non-nouns will be an individual
+    # element in the character vector while a document is a string
+    paste(non_nouns$token, collapse = " ")
 })
 
-# Replace 'docs' with the name of your corpus variable
-docs <- tm_map(docs, remove_nouns_transformer, model = ud_model)
 
+# Replace 'docs' with the name of your corpus variable
+docs <- tm_map(docs, remove_nouns_transformer)
 
 # Convert the text to lower case
 docs <- tm_map(docs, content_transformer(tolower))
@@ -65,17 +88,17 @@ docs <- tm_map(docs, removeWords, stopwords("english"))
 
 # Remove your own stop word
 # specify your stop words as a character vector
-docs <- tm_map(docs, removeWords, c(
-  "lake","always",
-  "one","per","hotel","rooms",
-  "palace","staff","room",
-  "just", "also", "can",
-  "every","although","get",
-  "even","will","radissons",
-  "radisson","rivage","pool","view","stay",
-  "back","thomas","property","back","island","day","hill",
-  "resort","views","time","place"
-))
+# docs <- tm_map(docs, removeWords, c(
+#   "lake","always",
+#   "one","per","hotel","rooms",
+#   "palace","staff","room",
+#   "just", "also", "can",
+#   "every","although","get",
+#   "even","will","radissons",
+#   "radisson","rivage","pool","view","stay",
+#   "back","thomas","property","back","island","day","hill",
+#   "resort","views","time","place"
+# ))
 
 # Build term-document matrix
 # Document matrix is a table containing the frequency of the words.
@@ -91,21 +114,16 @@ word_freq <- sort(rowSums(m),decreasing = T)
 # Extract only the words with frequency greater than 170
 word_freq <- subset(word_freq, word_freq >= 120)
 
-# Plot it
-sent1 <- barplot(
-    height = word_freq,
-    main = "Word Frequencies",
-    ylab = "Count",
-    names.arg = names(word_freq),
-    # Space between axis labels perpendicular to the bars
-    las = 2,
-    # Gradient
-    col = rainbow(50),
-    ylim = c(0, max(word_freq) * 1.1),
-)
 
-# Add actual value on top of the bars
-text(sent1, word_freq, labels = word_freq, pos = 3, cex = 0.7)
+# Word Frequencies plot
+word_freq_df <- data.frame(words = names(word_freq), freq = word_freq)
+ggplot(word_freq_df, aes(x = reorder(words, -freq), y = freq)) +
+  geom_bar(stat = "identity", fill = rainbow(50)) +
+  geom_text(aes(label = freq), vjust = -0.5, size = 3) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(title = "Word Frequencies", x = "Terms", y = "Count")
+
+
 
 # Uses National Research Council Canada (NRC)  Emotion lexicon
 # with eight emotions (anger, fear, anticipation, trust, surprise, sadness, joy, and disgust)
@@ -115,33 +133,6 @@ sentiment_scores <- get_nrc_sentiment(names(word_freq), language = "english")
 # Sum the sentiment score matrix
 sentiment_sum <- colSums(sentiment_scores)
 sentiment_sum<-sort(sentiment_sum,decreasing = TRUE)
-# Plot it
-sent2 <- barplot(sentiment_sum,
-    las = 2,
-    col = rainbow(10),
-    ylab = "Count",
-    main = "Sentiment Scores Comment",
-    ylim = c(0, max(sentiment_sum) * 1.1)
-)
-
-# Add actual value on top of the bars
-text(sent2,
-    sentiment_sum,
-    labels = sentiment_sum,
-    pos = 3
-)
-
-
-# Load ggplot2 package
-library("ggplot2")
-
-# Word Frequencies plot
-word_freq_df <- data.frame(words = names(word_freq), freq = word_freq)
-ggplot(word_freq_df, aes(x = reorder(words, -freq), y = freq)) +
-  geom_bar(stat = "identity", fill = rainbow(50)) +
-  geom_text(aes(label = freq), vjust = -0.5, size = 3) +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  labs(title = "Word Frequencies", x = "Terms", y = "Count")
 
 # Sentiment Scores plot
 sentiment_sum_df <- data.frame(sentiments = names(sentiment_sum), scores = sentiment_sum)
@@ -161,26 +152,6 @@ sentiment_scores_all <- get_nrc_sentiment(rownames(m), language = "english")
 # Sum the sentiment score matrix
 sentiment_sum_all <- colSums(sentiment_scores_all)
 sentiment_sum_all <-sort(sentiment_sum_all,decreasing = TRUE)
-# Plot it
-sent3 <- barplot(sentiment_sum,
-                 las = 2,
-                 col = rainbow(10),
-                 ylab = "Count",
-                 main = "Sentiment Scores Comment",
-                 ylim = c(0, max(sentiment_sum_all) * 1.1)
-)
-
-# Add actual value on top of the bars
-text(sent3,
-     sentiment_sum,
-     labels = sentiment_sum,
-     pos = 3
-)
-
-
-# Load ggplot2 package
-library("ggplot2")
-
 
 
 # Sentiment Scores plot
