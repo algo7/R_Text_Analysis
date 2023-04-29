@@ -100,7 +100,7 @@ docs <- tm_map(docs, removeWords, c(
   "radisson","rivage","pool","view","stay",
   "back","thomas","property","back","island","day","hill","got",
   "resort","views","time","place","two","first","front","much","stayed",
-  "really","around","everything", "also"
+  "really","around","everything", "also","many","little"
 ))
 
 # Build term-document matrix
@@ -114,21 +114,41 @@ m <- as.matrix(dtm)
 # Sum the frequencies of all words
 word_freq <- sort(rowSums(m),decreasing = T)
 
-limit <- 100
+# Calculate the total number of unique words
+total_words <- length(word_freq)
 
-# Extract only the words with frequency greater than 170
-word_freq <- subset(word_freq, word_freq >= limit)
+# Define the percentage of words to consider as "top words"
+percentage <- 0.01
+
+# This line calculates the number of words to be considered as the "top words". 
+# The line multiplies "total_words" by "percentage", then rounds the result up 
+# to the nearest integer using the "ceiling" function to ensure that at least one word is included in the top words.
+top_1_percent <- ceiling(total_words * percentage )
+
+# This line calculates the frequency threshold below which a word is not considered as one of the top words. 
+# The "quantile" function takes the "word_freq" vector and the percentage of words to be considered as input. 
+# The percentage value is calculated by subtracting "top_1_percent" from "total_words" and then dividing the result by "total_words".
+# The resulting value represents the fraction 
+# of words to be excluded from the top words, so the "quantile" function calculates 
+# the frequency value below which the excluded words fall.
+freq_threshold <- quantile(word_freq, 1 - top_1_percent/total_words)
+
+# Extract the top x% most frequent words
+top_words <- names(word_freq[word_freq >= freq_threshold])
+
+# Convert top_words to data frame
+top_words_df <- data.frame(word = top_words, freq = word_freq[word_freq >= freq_threshold], stringsAsFactors = FALSE)
+
+# Remove NAs from the data frame
+top_words_df <- top_words_df[!is.na(top_words_df$word), ]
 
 
-# Word Frequencies plot
-word_freq_df <- data.frame(words = names(word_freq), freq = word_freq)
-ggplot(word_freq_df, aes(x = reorder(words, -freq), y = freq)) +
-  geom_bar(stat = "identity", fill = rainbow(length(word_freq))) +
+# Plot a bar chart of the top 1% most frequent words
+ggplot(top_words_df, aes(x = reorder(word, -freq), y = freq)) +
+  geom_bar(stat = "identity", fill = rainbow(length(top_words_df$word))) +
   geom_text(aes(label = freq), vjust = -0.5, size = 3) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  labs(title = paste("Frequent Terms (Occurrence >= ", limit,")"), x = "Terms", y = "Count")
-
-
+  labs(title = paste("Top", percentage *100, "% Most Frequent Words"), x = "Word", y = "Frequency")
 
 
 # For the entire doc-term matrix
@@ -154,7 +174,7 @@ ggplot(sentiment_sum_df, aes(x = reorder(sentiments, -scores), y = scores)) +
 
 
 # For the most frequent words defined above
-sentiment_scores <- get_nrc_sentiment(names(word_freq), language = "english")
+sentiment_scores <- get_nrc_sentiment(top_words_df$word, language = "english")
 
 # Sum the sentiment score matrix
 sentiment_sum <- colSums(sentiment_scores)
@@ -167,3 +187,24 @@ ggplot(sentiment_sum_df, aes(x = reorder(sentiments, -scores), y = scores)) +
   geom_text(aes(label = scores), vjust = -0.5, size = 3) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   labs(title = "Distribution of Sentiment Categories", x = "Terms", y = "Count")
+
+
+## For word that accounts for x% of the entire courpus
+# # Calculate the percentage of each word in the corpus
+# word_freq_pct <- word_freq / sum(word_freq) * 100
+# 
+# # Extract only the words with frequency greater than the threshold
+# freq_threshold <- 2 # set the threshold to 0.5%
+# word_freq <- word_freq_pct[word_freq_pct >= freq_threshold]
+# 
+# 
+# # Word Frequencies plot
+# word_freq_df <- data.frame(words = names(word_freq), freq = word_freq)
+# ggplot(word_freq_df, aes(x = reorder(words, -freq), y = freq)) +
+#   geom_bar(stat = "identity", fill = rainbow(length(word_freq))) +
+#   geom_text(aes(label = freq), vjust = -0.5, size = 3) +
+#   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+#   labs(title = paste("Frequent Terms (Occurrence >= ", freq_threshold,"% )"), x = "Terms", y = "Count")
+
+
+
