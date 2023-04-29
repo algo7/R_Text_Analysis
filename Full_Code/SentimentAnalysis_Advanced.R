@@ -100,7 +100,7 @@ docs <- tm_map(docs, removeWords, c(
   "radisson","rivage","pool","view","stay",
   "back","thomas","property","back","island","day","hill","got",
   "resort","views","time","place","two","first","front","much","stayed",
-  "really","around","everything", "also","many","little"
+  "really","around","everything", "also","many","little","sure","never","close"
 ))
 
 # Build term-document matrix
