@@ -82,11 +82,11 @@ docs <- tm_map(docs, stripWhitespace)
 docs <- tm_map(docs, to_space, "[[:punct:] ]+")
 docs <- tm_map(docs, to_space, "[[:digit:] ]+")
 
-# Remove English common stop words
-docs <- tm_map(docs, removeWords, stopwords("english"))
-
 # Remove nouns, pronouns, verb, interjections, numbers, and proper nouns
 docs <- tm_map(docs, remove_undesired_pos)
+
+# Remove English common stop words
+docs <- tm_map(docs, removeWords, stopwords("english"))
 
 # Remove your own stop word
 # specify your stop words as a character vector
@@ -100,7 +100,9 @@ docs <- tm_map(docs, removeWords, c(
   "radisson","rivage","pool","view","stay",
   "back","thomas","property","back","island","day","hill","got",
   "resort","views","time","place","two","first","front","much","stayed",
-  "really","around","everything", "also","many","little","sure","never","close"
+  "really","around","everything", "also","many","little","sure","never","close","elysian",
+  "still","away","ocean","next","beach","emerald","Margaritaville","margaritaville","margarita",
+  "however","right","windward","passage","Windward","secret","harbour","point","dive","deep","tamarind","ritz","ferry"
 ))
 
 # Build term-document matrix
