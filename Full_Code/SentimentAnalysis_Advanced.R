@@ -75,9 +75,6 @@ remove_undesired_pos <- content_transformer(function(text) {
 # Convert the text to lower case
 docs <- tm_map(docs, content_transformer(tolower))
 
-# Eliminate extra white spaces
-docs <- tm_map(docs, stripWhitespace)
-
 # Remove numbers and punctuation
 docs <- tm_map(docs, to_space, "[[:punct:] ]+")
 docs <- tm_map(docs, to_space, "[[:digit:] ]+")
@@ -104,6 +101,16 @@ docs <- tm_map(docs, removeWords, c(
   "still","away","ocean","next","beach","emerald","Margaritaville","margaritaville","margarita",
   "however","right","windward","passage","Windward","secret","harbour","point","dive","deep","tamarind","ritz","ferry"
 ))
+
+# Strip single english character
+docs <- tm_map(docs, to_space, "\\b[a-zA-Z]\\b")
+
+# Eliminate extra white spaces
+docs <- tm_map(docs, stripWhitespace)
+
+# Eliminate extra white space at the start of a sentence
+docs <- tm_map(docs, to_space, "^\\s+")
+
 
 # Build term-document matrix
 # Document matrix is a table containing the frequency of the words.
