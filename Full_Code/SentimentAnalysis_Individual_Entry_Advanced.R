@@ -49,6 +49,13 @@ to_space <- content_transformer(
     }
 )
 
+# Function to substitute the given pattern with nothing
+to_nothing <- content_transformer(
+  function(text, pattern) {
+    gsub(pattern, "", text)
+  }
+)
+
 # Function to remove all english nouns
 remove_undesired_pos <- content_transformer(function(text) {
   
@@ -108,7 +115,7 @@ docs <- tm_map(docs, to_space, "\\b[a-zA-Z]\\b")
 docs <- tm_map(docs, stripWhitespace)
 
 # Eliminate extra white space at the start of a sentence
-docs <- tm_map(docs, to_space, "^\\s+")
+docs <- tm_map(docs, to_nothing, "^\\s+")
 
 
 # Convert VCorpus to data frame
