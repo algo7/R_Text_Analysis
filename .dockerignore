@@ -1,0 +1,14 @@
+.*
+*.zip
+*.cff
+**Data
+Dockerfile
+*.udpipe
+LICENSE
+Presentations
+*.Rporj
+*.md
+Scripts
+*.csv
+WordCloud.R
+SentimentAnalysis.R
