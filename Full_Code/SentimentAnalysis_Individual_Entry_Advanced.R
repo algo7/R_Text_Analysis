@@ -32,8 +32,16 @@ ud_model <- udpipe_load_model(ud_model$file_model)
 
 ######## Start Here ##########
 
+path <- Sys.getenv("DATA_SOURCE_PATH")
+
+hotel_name <- "test"
+
 # Load data set
-data <- read.csv(file.choose(), header = T)
+if (path != ""){
+  data <- read.csv(path, header = T)
+}else{
+  data <- read.csv(file.choose(), header = T)
+}
 
 # Extract the text column
 docs <- iconv(data$content)
@@ -95,17 +103,15 @@ docs <- tm_map(docs, removeWords, stopwords("english"))
 # specify your stop words as a character vector
 docs <- tm_map(docs, removeWords, c(
   "lake","always",
-  "one","per","hotel","rooms",
-  "palace","staff","room",
+  "one","per",
+  "palace",
   "just", "also", "can",
   "every","although","get",
   "even","will","radissons",
-  "radisson","rivage","pool","view","stay",
-  "back","thomas","property","back","island","day","hill","got",
-  "resort","views","time","place","two","first","front","much","stayed",
-  "really","around","everything", "also","many","little","sure","never","close","elysian",
-  "still","away","ocean","next","beach","emerald","Margaritaville","margaritaville","margarita","bluebeards",
-  "however","right","windward","passage","Windward","secret","harbour","point","dive","deep","tamarind","ritz","ferry"
+  "radisson","rivage","bolongo",
+  "back","thomas","got","elysian","Emerald Beach",
+  "still","away","next","emerald","Margaritaville","margaritaville","margarita","bluebeards","bolongo bay",
+  "however","windward","passage","Windward","secret","harbour","point","dive","deep","tamarind","ritz","ferry"
 ))
 
 # Strip single english character
@@ -131,7 +137,7 @@ df <- df %>%
   unnest_wider(sentiment)
 
 # Save the dataframe to a CSV file
-write.csv(df, file = paste("TripAdvisor_",data$hotelName[1],".csv"), row.names = FALSE)
+write.csv(df, file = paste(hotel_name,".csv"), row.names = FALSE)
 
 
 
