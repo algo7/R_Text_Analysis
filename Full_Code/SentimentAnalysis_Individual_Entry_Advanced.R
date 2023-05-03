@@ -22,7 +22,13 @@ if (length(not_met_dependencies) != 0) {
 library("tm")
 library("syuzhet")
 library("tidyr")
+library("udpipe")
 
+# Download the english lang model for udpipe
+ud_model <- udpipe_download_model(language = "english")
+
+# Load model
+ud_model <- udpipe_load_model(ud_model$file_model)
 
 ######## Start Here ##########
 
@@ -71,13 +77,9 @@ docs <- tm_map(docs, content_transformer(tolower))
 # Remove nouns, pronouns, verb, interjections, numbers, and proper nouns
 docs <- tm_map(docs, remove_undesired_pos)
 
-# Eliminate extra white spaces
-docs <- tm_map(docs, stripWhitespace)
-
 # Remove numbers and punctuation
 docs <- tm_map(docs, to_space, "[[:punct:] ]+")
 docs <- tm_map(docs, to_space, "[[:digit:] ]+")
-
 
 # Remove English common stop words
 docs <- tm_map(docs, removeWords, stopwords("english"))
@@ -99,9 +101,20 @@ docs <- tm_map(docs, removeWords, c(
   "however","right","windward","passage","Windward","secret","harbour","point","dive","deep","tamarind","ritz","ferry"
 ))
 
+# Strip single english character
+docs <- tm_map(docs, to_space, "\\b[a-zA-Z]\\b")
+
+# Eliminate extra white spaces
+docs <- tm_map(docs, stripWhitespace)
+
+# Eliminate extra white space at the start of a sentence
+docs <- tm_map(docs, to_space, "^\\s+")
+
 
 # Convert VCorpus to data frame
 df<- data.frame(text=sapply(docs, as.character))
+
+df$original_text <- data$content
 
 # Apply the get_nrc_sentiment function to the text column and create a new column
 df$sentiment <- lapply(df$text, get_nrc_sentiment)
@@ -112,6 +125,9 @@ df <- df %>%
 
 # Save the dataframe to a CSV file
 write.csv(df, file = "results.csv", row.names = FALSE)
+
+
+
 
 
 
