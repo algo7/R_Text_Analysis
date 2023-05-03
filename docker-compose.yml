@@ -1,0 +1,10 @@
+version: '3.9'
+services:
+  # Service name
+  r_sentiment_analysis:
+    # Build directory
+    build: ..
+    # Image name
+    image: ${IMAGE_NAME}
+  environment:
+    DATA_SOURCE_PATH: 
