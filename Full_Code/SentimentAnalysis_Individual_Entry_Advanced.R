@@ -67,7 +67,7 @@ remove_undesired_pos <- content_transformer(function(text) {
   
   # Filter undesired POS
   filtered <- subset(annotation_df, 
-                     !(upos %in% c("NOUN", "PROPN", "VERB", "PRON", "NUM", "INTJ", "AUX", "CCONJ", "ADP", "X")))
+                     !(upos %in% c("PROPN", "VERB", "PRON", "NUM", "INTJ", "AUX", "CCONJ", "ADP", "X")))
   # print(paste("Filtered POS tags:", paste(filtered$upos, collapse = ", ")))
   
   
@@ -104,7 +104,7 @@ docs <- tm_map(docs, removeWords, c(
   "back","thomas","property","back","island","day","hill","got",
   "resort","views","time","place","two","first","front","much","stayed",
   "really","around","everything", "also","many","little","sure","never","close","elysian",
-  "still","away","ocean","next","beach","emerald","Margaritaville","margaritaville","margarita",
+  "still","away","ocean","next","beach","emerald","Margaritaville","margaritaville","margarita","bluebeards",
   "however","right","windward","passage","Windward","secret","harbour","point","dive","deep","tamarind","ritz","ferry"
 ))
 
@@ -131,7 +131,7 @@ df <- df %>%
   unnest_wider(sentiment)
 
 # Save the dataframe to a CSV file
-write.csv(df, file = "results.csv", row.names = FALSE)
+write.csv(df, file = paste("TripAdvisor_",data$hotelName[1],".csv"), row.names = FALSE)
 
 
 
