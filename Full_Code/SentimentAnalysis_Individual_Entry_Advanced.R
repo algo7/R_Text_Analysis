@@ -25,26 +25,27 @@ library("tidyr")
 library("udpipe")
 
 # Download the english lang model for udpipe
-ud_model <- udpipe_download_model(language = "english")
+# ud_model <- udpipe_download_model(language = "english")
 
 # Load model
-ud_model <- udpipe_load_model(ud_model$file_model)
+# ud_model <- udpipe_load_model(ud_model$file_model)
+ud_model <- udpipe_load_model("/home/algo7/Desktop/code/R_Text_Analysis/english-ewt-ud-2.5-191206.udpipe")
 
 ######## Start Here ##########
 
 path <- Sys.getenv("DATA_SOURCE_PATH")
 
-hotel_name <- "test"
-
 # Load data set
 if (path != ""){
   data <- read.csv(path, header = T)
 }else{
-  data <- read.csv(file.choose(), header = T)
+  file <- file.choose()
+  filename <- basename(file)
+  data <- read.csv(file, header = T)
 }
 
 # Extract the text column
-docs <- iconv(data$content)
+docs <- iconv(data$Text)
 
 # Load the text as a corpus
 docs <- VCorpus(VectorSource(docs))
@@ -127,8 +128,6 @@ docs <- tm_map(docs, to_nothing, "^\\s+")
 # Convert VCorpus to data frame
 df<- data.frame(text=sapply(docs, as.character))
 
-df$original_text <- data$content
-
 # Apply the get_nrc_sentiment function to the text column and create a new column
 df$sentiment <- lapply(df$text, get_nrc_sentiment)
 
@@ -136,8 +135,11 @@ df$sentiment <- lapply(df$text, get_nrc_sentiment)
 df <- df %>%
   unnest_wider(sentiment)
 
+# Combined the raw data with analysis results
+df <- cbind(data,df)
+
 # Save the dataframe to a CSV file
-write.csv(df, file = paste(hotel_name,".csv"), row.names = FALSE)
+write.csv(df, file = paste(filename), row.names = FALSE)
 
 
 
