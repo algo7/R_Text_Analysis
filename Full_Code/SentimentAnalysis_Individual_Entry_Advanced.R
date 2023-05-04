@@ -76,7 +76,7 @@ remove_undesired_pos <- content_transformer(function(text) {
   
   # Filter undesired POS
   filtered <- subset(annotation_df, 
-                     !(upos %in% c("PROPN", "NOUN", "VERB", "PRON", "NUM", "INTJ", "AUX", "CCONJ", "ADP", "X")))
+                     !(upos %in% c("PROPN", "PRON", "NUM", "INTJ", "AUX", "CCONJ", "ADP", "X")))
   # print(paste("Filtered POS tags:", paste(filtered$upos, collapse = ", ")))
   
   
@@ -141,8 +141,22 @@ df <- cbind(data,df)
 # Save the dataframe to a CSV file
 write.csv(df, file = paste(filename), row.names = FALSE)
 
+# Filter out rows that have all NRC categories with 0 value
+df <- df[rowSums(df[, 7:16]) != 0, ]
 
 
+# Function to classify text based on highest score
+classify_text <- function(row) {
 
+  # Get index of column with highest score
+  highest_index <- which.max(row[7:16])
+  return (names(highest_index))
+}
+
+# MARGIN 1 indicates rows, 2 indicates columns, c(1, 2) indicates rows and columns
+df$class <- apply(df, MARGIN=1, classify_text)
+
+# Save the dataframe to a CSV file
+write.csv(df, file = paste(filename,"_classified.csv",sep=""), row.names = FALSE)
 
 
