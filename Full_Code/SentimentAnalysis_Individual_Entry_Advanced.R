@@ -76,7 +76,7 @@ remove_undesired_pos <- content_transformer(function(text) {
   
   # Filter undesired POS
   filtered <- subset(annotation_df, 
-                     !(upos %in% c("PROPN", "VERB", "PRON", "NUM", "INTJ", "AUX", "CCONJ", "ADP", "X")))
+                     !(upos %in% c("PROPN", "NOUN", "VERB", "PRON", "NUM", "INTJ", "AUX", "CCONJ", "ADP", "X")))
   # print(paste("Filtered POS tags:", paste(filtered$upos, collapse = ", ")))
   
   
