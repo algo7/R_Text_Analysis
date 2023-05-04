@@ -144,6 +144,15 @@ write.csv(df, file = paste(filename), row.names = FALSE)
 # Filter out rows that have all NRC categories with 0 value
 df <- df[rowSums(df[, 7:16]) != 0, ]
 
+# Reduce NRC category dimension
+df$positive <- df$joy + df$trust + df$anticipation + df$positive
+df$negative <- df$anger + df$disgust + df$fear + df$sadness + df$negative
+
+# Remove combined categories and netural category => surprise
+df <- subset(df,select = -c(trust,joy,anticipation,anger,disgust,fear,sadness,surprise))
+
+# Remove rows where positive = negative. in other words, keep those where the abs diff is > 0
+df <- subset(df, abs(positive - negative) > 0)
 
 # Function to classify text based on highest score
 classify_text <- function(row) {
