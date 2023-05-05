@@ -209,65 +209,70 @@ graph_top_words <- function(emotion, timespan, data_source){
     df_emo <- df[which(df$class == emotion_lower & df$Year == timespan),]
   }
 
-  # Extract the text column
-  docs_emo <- iconv(df_emo$text)
-  
-  # Load the text as a corpus
-  docs_emo <- VCorpus(VectorSource(docs_emo))
-  
-  # Remove ADJ
-  docs_emo <- tm_map(docs_emo, remove_adjective_adverb)
-  
-  docs_emo <- tm_map(docs_emo,to_custom,"desk", "frontdesk")
-  docs_emo <- tm_map(docs_emo,to_custom,"check", "check-in/check-out")
-  
-  dtm_emo <- TermDocumentMatrix(docs_emo)
-  
-  # Convert term doc matrix into matrix
-  m_emo <- as.matrix(dtm_emo)
-
-  # Sum the frequencies of all words
-  word_freq <- sort(rowSums(m_emo),decreasing = T)
-  
-  # Calculate the total number of unique words
-  total_words <- length(word_freq)
-  
-  # Define the percentage of words to consider as "top words"
-  percentage <- 0.02
-  
-  # This line calculates the number of words to be considered as the "top words". 
-  # The line multiplies "total_words" by "percentage", then rounds the result up 
-  # to the nearest integer using the "ceiling" function to ensure that at least one word is included in the top words.
-  top_1_percent <- ceiling(total_words * percentage )
-  
-  # This line calculates the frequency threshold below which a word is not considered as one of the top words. 
-  # The "quantile" function takes the "word_freq" vector and the percentage of words to be considered as input. 
-  # The percentage value is calculated by subtracting "top_1_percent" from "total_words" and then dividing the result by "total_words".
-  # The resulting value represents the fraction 
-  # of words to be excluded from the top words, so the "quantile" function calculates 
-  # the frequency value below which the excluded words fall.
-  freq_threshold <- quantile(word_freq, 1 - top_1_percent/total_words)
-  
-  # Extract the top x% most frequent words
-  top_words <- names(word_freq[word_freq >= freq_threshold])
-  
-  # Convert top_words to data frame
-  top_words_df <- data.frame(word = top_words, freq = word_freq[word_freq >= freq_threshold], stringsAsFactors = FALSE)
-  
-  # Remove NAs from the data frame
-  top_words_df <- top_words_df[!is.na(top_words_df$word), ]
-  
-  
-  # Plot a bar chart of the top 1% most frequent words
-  plot <- ggplot(top_words_df, aes(x = reorder(word, -freq), y = freq)) +
-    geom_bar(stat = "identity", fill = rainbow(length(top_words_df$word))) +
-    geom_text(aes(label = freq), vjust = -0.5, size = 3) +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-    labs(title = paste(hotel_name,"Top", percentage *100, 
-                       "% Most Frequent Words for", emotion,"Comments",
-                       paste("[",data_source,":",timespan,"]",sep = "")), x = "Word", y = "Frequency")
-  
-  ggsave(paste("./Graphs/",emotion_lower,"_",hotel_name,"_",data_source,"_",timespan,".png",sep = ""), plot = plot, width = 13.66, height = 8.68, dpi = 600)
+  # Make sure the dataframe is not empty
+  if(dim(df_emo)[1] != 0){
+    
+    # Extract the text column
+    docs_emo <- iconv(df_emo$text)
+    
+    # Load the text as a corpus
+    docs_emo <- VCorpus(VectorSource(docs_emo))
+    
+    # Remove ADJ
+    docs_emo <- tm_map(docs_emo, remove_adjective_adverb)
+    
+    docs_emo <- tm_map(docs_emo,to_custom,"desk", "frontdesk")
+    docs_emo <- tm_map(docs_emo,to_custom,"check", "check-in/check-out")
+    
+    dtm_emo <- TermDocumentMatrix(docs_emo)
+    
+    # Convert term doc matrix into matrix
+    m_emo <- as.matrix(dtm_emo)
+    
+    # Sum the frequencies of all words
+    word_freq <- sort(rowSums(m_emo),decreasing = T)
+    
+    # Calculate the total number of unique words
+    total_words <- length(word_freq)
+    
+    # Define the percentage of words to consider as "top words"
+    percentage <- 0.02
+    
+    # This line calculates the number of words to be considered as the "top words". 
+    # The line multiplies "total_words" by "percentage", then rounds the result up 
+    # to the nearest integer using the "ceiling" function to ensure that at least one word is included in the top words.
+    top_1_percent <- ceiling(total_words * percentage )
+    
+    # This line calculates the frequency threshold below which a word is not considered as one of the top words. 
+    # The "quantile" function takes the "word_freq" vector and the percentage of words to be considered as input. 
+    # The percentage value is calculated by subtracting "top_1_percent" from "total_words" and then dividing the result by "total_words".
+    # The resulting value represents the fraction 
+    # of words to be excluded from the top words, so the "quantile" function calculates 
+    # the frequency value below which the excluded words fall.
+    freq_threshold <- quantile(word_freq, 1 - top_1_percent/total_words)
+    
+    # Extract the top x% most frequent words
+    top_words <- names(word_freq[word_freq >= freq_threshold])
+    
+    # Convert top_words to data frame
+    top_words_df <- data.frame(word = top_words, freq = word_freq[word_freq >= freq_threshold], stringsAsFactors = FALSE)
+    
+    # Remove NAs from the data frame
+    top_words_df <- top_words_df[!is.na(top_words_df$word), ]
+    
+    
+    # Plot a bar chart of the top 1% most frequent words
+    plot <- ggplot(top_words_df, aes(x = reorder(word, -freq), y = freq)) +
+      geom_bar(stat = "identity", fill = rainbow(length(top_words_df$word))) +
+      geom_text(aes(label = freq), vjust = -0.5, size = 3) +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+      labs(title = paste(hotel_name,"Top", percentage *100, 
+                         "% Most Frequent Words for", emotion,"Comments",
+                         paste("[",data_source,":",timespan,"]",sep = "")), x = "Word", y = "Frequency")
+    
+    ggsave(paste("./Graphs/",emotion_lower,"_",hotel_name,"_",data_source,"_",timespan,".png",sep = ""), plot = plot, width = 13.66, height = 8.68, dpi = 600)
+    
+  }
   
 }
 
