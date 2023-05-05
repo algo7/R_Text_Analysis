@@ -1,6 +1,6 @@
 # List of required packages
 required_pkgs <- c(
-    "tm", "syuzhet","tidyr"
+    "tm", "syuzhet","tidyr","ggplot2"
 )
 
 # Empty list to hold dependencies that are not installed
@@ -23,6 +23,7 @@ library("tm")
 library("syuzhet")
 library("tidyr")
 library("udpipe")
+library("ggplot2")
 
 # Download the english lang model for udpipe
 # ud_model <- udpipe_download_model(language = "english")
@@ -77,6 +78,27 @@ remove_undesired_pos <- content_transformer(function(text) {
   # Filter undesired POS
   filtered <- subset(annotation_df, 
                      !(upos %in% c("PROPN", "PRON", "NUM", "INTJ", "AUX", "CCONJ", "ADP", "X")))
+  # print(paste("Filtered POS tags:", paste(filtered$upos, collapse = ", ")))
+  
+  
+  # Combine the processed data into a single string
+  # collapse is required other wise each non-nouns will be an individual
+  # element in the character vector while a document is a string
+  paste(filtered$token, collapse = " ")
+})
+
+# Function to remove all english nouns
+remove_adjective <- content_transformer(function(text) {
+  
+  # Annotate the text using the UDPipe model
+  annotation <- udpipe_annotate(ud_model, text)
+  
+  # Convert the annotation to a data frame
+  annotation_df <- as.data.frame(annotation)
+  
+  # Filter undesired POS
+  filtered <- subset(annotation_df, 
+                     !(upos %in% c("ADJ")))
   # print(paste("Filtered POS tags:", paste(filtered$upos, collapse = ", ")))
   
   
@@ -169,3 +191,64 @@ df$class <- apply(df, MARGIN=1, classify_text)
 write.csv(df, file = paste(filename,"_classified.csv",sep=""), row.names = FALSE)
 
 
+graph_top_words <- function(emotion){
+  print(emotion)
+  df_emo <- df[which(df$class == emotion),]
+
+  # Extract the text column
+  docs_emo <- iconv(df_emo$text)
+  
+  # Load the text as a corpus
+  docs_emo <- VCorpus(VectorSource(docs_emo))
+  
+  # Remove ADJ
+  docs_emo <- tm_map(docs_emo, remove_adjective)
+  
+  dtm_emo<- TermDocumentMatrix(docs_emo)
+  
+  # Convert term doc matrix into matrix
+  m_emo<- as.matrix(dtm_emo)
+  
+  # Sum the frequencies of all words
+  word_freq <- sort(rowSums(m_emo),decreasing = T)
+  
+  # Calculate the total number of unique words
+  total_words <- length(word_freq)
+  
+  # Define the percentage of words to consider as "top words"
+  percentage <- 0.01
+  
+  # This line calculates the number of words to be considered as the "top words". 
+  # The line multiplies "total_words" by "percentage", then rounds the result up 
+  # to the nearest integer using the "ceiling" function to ensure that at least one word is included in the top words.
+  top_1_percent <- ceiling(total_words * percentage )
+  
+  # This line calculates the frequency threshold below which a word is not considered as one of the top words. 
+  # The "quantile" function takes the "word_freq" vector and the percentage of words to be considered as input. 
+  # The percentage value is calculated by subtracting "top_1_percent" from "total_words" and then dividing the result by "total_words".
+  # The resulting value represents the fraction 
+  # of words to be excluded from the top words, so the "quantile" function calculates 
+  # the frequency value below which the excluded words fall.
+  freq_threshold <- quantile(word_freq, 1 - top_1_percent/total_words)
+  
+  # Extract the top x% most frequent words
+  top_words <- names(word_freq[word_freq >= freq_threshold])
+  
+  # Convert top_words to data frame
+  top_words_df <- data.frame(word = top_words, freq = word_freq[word_freq >= freq_threshold], stringsAsFactors = FALSE)
+  
+  # Remove NAs from the data frame
+  top_words_df <- top_words_df[!is.na(top_words_df$word), ]
+  
+  
+  # Plot a bar chart of the top 1% most frequent words
+  ggplot(top_words_df, aes(x = reorder(word, -freq), y = freq)) +
+    geom_bar(stat = "identity", fill = rainbow(length(top_words_df$word))) +
+    geom_text(aes(label = freq), vjust = -0.5, size = 3) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    labs(title = paste("Top", percentage *100, "% Most Frequent Words for",emotion,"Comments"), x = "Word", y = "Frequency")
+  
+}
+
+graph_top_words("positive")
+graph_top_words("negative")
