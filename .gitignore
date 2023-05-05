@@ -45,3 +45,5 @@ Data/To_Be_Processed
 Data/Analysis_Results.zip
 Data/Analysis_Individual_Comments
 *.udpipe
+Debug
+Graphs
