@@ -43,6 +43,8 @@ if (path != ""){
   file <- file.choose()
   filename <- basename(file)
   data <- read.csv(file, header = T)
+  splitted_hotel_name <- unlist(strsplit(filename," "))
+  hotel_name <- unlist(splitted_hotel_name[1], splitted_hotel_name[2])
 }
 
 # Extract the text column
@@ -63,6 +65,13 @@ to_space <- content_transformer(
 to_nothing <- content_transformer(
   function(text, pattern) {
     gsub(pattern, "", text)
+  }
+)
+
+# Function to substitute the given pattern with another given pattern
+to_custom <- content_transformer(
+  function(text, pattern_a, pattern_b) {
+    gsub(pattern_a, pattern_b, text)
   }
 )
 
@@ -192,8 +201,10 @@ write.csv(df, file = paste(filename,"_classified.csv",sep=""), row.names = FALSE
 
 
 graph_top_words <- function(emotion){
-  print(emotion)
-  df_emo <- df[which(df$class == emotion),]
+  
+  emotion_lower <- tolower(emotion)
+
+  df_emo <- df[which(df$class == emotion_lower),]
 
   # Extract the text column
   docs_emo <- iconv(df_emo$text)
@@ -204,11 +215,14 @@ graph_top_words <- function(emotion){
   # Remove ADJ
   docs_emo <- tm_map(docs_emo, remove_adjective)
   
-  dtm_emo<- TermDocumentMatrix(docs_emo)
+  docs_emo <- tm_map(docs_emo,to_custom,"desk", "frontdesk")
+  docs_emo <- tm_map(docs_emo,to_custom,"check", "check-in/check-out")
+  
+  dtm_emo <- TermDocumentMatrix(docs_emo)
   
   # Convert term doc matrix into matrix
-  m_emo<- as.matrix(dtm_emo)
-  
+  m_emo <- as.matrix(dtm_emo)
+
   # Sum the frequencies of all words
   word_freq <- sort(rowSums(m_emo),decreasing = T)
   
@@ -246,9 +260,10 @@ graph_top_words <- function(emotion){
     geom_bar(stat = "identity", fill = rainbow(length(top_words_df$word))) +
     geom_text(aes(label = freq), vjust = -0.5, size = 3) +
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-    labs(title = paste("Top", percentage *100, "% Most Frequent Words for",emotion,"Comments"), x = "Word", y = "Frequency")
+    labs(title = paste(hotel_name,"Top", percentage *100, "% Most Frequent Words for",
+                       emotion,"Comments"), x = "Word", y = "Frequency")
   
 }
 
-graph_top_words("positive")
-graph_top_words("negative")
+graph_top_words("Positive")
+graph_top_words("Negative")
