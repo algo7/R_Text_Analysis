@@ -155,7 +155,6 @@ docs <- tm_map(docs, stripWhitespace)
 # Eliminate extra white space at the start of a sentence
 docs <- tm_map(docs, to_nothing, "^\\s+")
 
-
 # Convert VCorpus to data frame
 df<- data.frame(text=sapply(docs, as.character))
 
@@ -170,7 +169,7 @@ df <- df %>%
 df <- cbind(data,df)
 
 # Save the dataframe to a CSV file
-write.csv(df, file = paste(filename), row.names = FALSE)
+write.csv(df, file = paste("Stage_1",filename, sep = ""), row.names = FALSE)
 
 # Filter out rows that have all NRC categories with 0 value
 df <- df[rowSums(df[, 7:16]) != 0, ]
@@ -197,14 +196,18 @@ classify_text <- function(row) {
 df$class <- apply(df, MARGIN=1, classify_text)
 
 # Save the dataframe to a CSV file
-write.csv(df, file = paste(filename,"_classified.csv",sep=""), row.names = FALSE)
+write.csv(df, file = paste("Stage_2", filename,sep = ""), row.names = FALSE)
 
 
-graph_top_words <- function(emotion){
+graph_top_words <- function(emotion, timespan){
   
   emotion_lower <- tolower(emotion)
-
-  df_emo <- df[which(df$class == emotion_lower),]
+  
+  if (timespan == "All") {
+    df_emo <- df[which(df$class == emotion_lower),]
+  }else{
+    df[which(df$class == emotion_lower & df$Year == timepsan),]
+  }
 
   # Extract the text column
   docs_emo <- iconv(df_emo$text)
