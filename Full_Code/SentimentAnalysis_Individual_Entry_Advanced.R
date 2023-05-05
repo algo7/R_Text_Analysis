@@ -156,7 +156,7 @@ docs <- tm_map(docs, stripWhitespace)
 docs <- tm_map(docs, to_nothing, "^\\s+")
 
 # Convert VCorpus to data frame
-df<- data.frame(text=sapply(docs, as.character))
+df<- data.frame(processed_text=sapply(docs, as.character))
 
 # Apply the get_nrc_sentiment function to the text column and create a new column
 df$sentiment <- lapply(df$text, get_nrc_sentiment)
@@ -236,7 +236,7 @@ graph_top_words <- function(emotion, timespan, data_source){
     total_words <- length(word_freq)
     
     # Define the percentage of words to consider as "top words"
-    percentage <- 0.02
+    percentage <- 0.01
     
     # This line calculates the number of words to be considered as the "top words". 
     # The line multiplies "total_words" by "percentage", then rounds the result up 
