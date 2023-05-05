@@ -233,7 +233,7 @@ graph_top_words <- function(emotion, timespan, data_source){
   total_words <- length(word_freq)
   
   # Define the percentage of words to consider as "top words"
-  percentage <- 0.01
+  percentage <- 0.02
   
   # This line calculates the number of words to be considered as the "top words". 
   # The line multiplies "total_words" by "percentage", then rounds the result up 
@@ -267,7 +267,7 @@ graph_top_words <- function(emotion, timespan, data_source){
                        "% Most Frequent Words for", emotion,"Comments",
                        paste("[",data_source,":",timespan,"]",sep = "")), x = "Word", y = "Frequency")
   
-  ggsave(paste("./Graphs/",hotel_name,"_",data_source,"_",timespan,".png",sep = ""), plot = plot, width = 13.66, height = 8.68, dpi = 600)
+  ggsave(paste("./Graphs/",emotion_lower,"_",hotel_name,"_",data_source,"_",timespan,".png",sep = ""), plot = plot, width = 13.66, height = 8.68, dpi = 600)
   
 }
 
