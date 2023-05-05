@@ -75,7 +75,7 @@ to_custom <- content_transformer(
   }
 )
 
-# Function to remove all english nouns
+# Function to remove all undesired pos
 remove_undesired_pos <- content_transformer(function(text) {
   
   # Annotate the text using the UDPipe model
@@ -96,8 +96,8 @@ remove_undesired_pos <- content_transformer(function(text) {
   paste(filtered$token, collapse = " ")
 })
 
-# Function to remove all english nouns
-remove_adjective <- content_transformer(function(text) {
+# Function to adj and adv
+remove_adjective_adverb <- content_transformer(function(text) {
   
   # Annotate the text using the UDPipe model
   annotation <- udpipe_annotate(ud_model, text)
@@ -107,7 +107,7 @@ remove_adjective <- content_transformer(function(text) {
   
   # Filter undesired POS
   filtered <- subset(annotation_df, 
-                     !(upos %in% c("ADJ")))
+                     !(upos %in% c("ADJ","ADV")))
   # print(paste("Filtered POS tags:", paste(filtered$upos, collapse = ", ")))
   
   
@@ -213,7 +213,7 @@ graph_top_words <- function(emotion){
   docs_emo <- VCorpus(VectorSource(docs_emo))
   
   # Remove ADJ
-  docs_emo <- tm_map(docs_emo, remove_adjective)
+  docs_emo <- tm_map(docs_emo, remove_adjective_adverb)
   
   docs_emo <- tm_map(docs_emo,to_custom,"desk", "frontdesk")
   docs_emo <- tm_map(docs_emo,to_custom,"check", "check-in/check-out")
