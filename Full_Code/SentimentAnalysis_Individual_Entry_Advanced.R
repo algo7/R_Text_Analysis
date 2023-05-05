@@ -44,7 +44,7 @@ if (path != ""){
   filename <- basename(file)
   data <- read.csv(file, header = T)
   splitted_hotel_name <- unlist(strsplit(filename," "))
-  hotel_name <- unlist(splitted_hotel_name[1], splitted_hotel_name[2])
+  hotel_name <- paste(splitted_hotel_name[1], splitted_hotel_name[2])
 }
 
 # Extract the text column
