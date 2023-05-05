@@ -199,7 +199,7 @@ df$class <- apply(df, MARGIN=1, classify_text)
 write.csv(df, file = paste("Stage_2", filename,sep = ""), row.names = FALSE)
 
 
-graph_top_words <- function(emotion, timespan){
+graph_top_words <- function(emotion, timespan, data_source){
   
   emotion_lower <- tolower(emotion)
   
@@ -263,8 +263,9 @@ graph_top_words <- function(emotion, timespan){
     geom_bar(stat = "identity", fill = rainbow(length(top_words_df$word))) +
     geom_text(aes(label = freq), vjust = -0.5, size = 3) +
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-    labs(title = paste(hotel_name,"Top", percentage *100, "% Most Frequent Words for",
-                       emotion,"Comments"), x = "Word", y = "Frequency")
+    labs(title = paste(hotel_name,"Top", percentage *100, 
+                       "% Most Frequent Words for", emotion,"Comments",
+                       paste("[",data_source,":",timespan,"]",sep = "")), x = "Word", y = "Frequency")
   
 }
 
