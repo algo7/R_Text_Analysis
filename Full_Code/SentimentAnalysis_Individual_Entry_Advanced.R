@@ -169,7 +169,7 @@ df <- df %>%
 df <- cbind(data,df)
 
 # Save the dataframe to a CSV file
-write.csv(df, file = paste("Stage_1",filename, sep = ""), row.names = FALSE)
+write.csv(df, file = paste("./Debug/Stage_1_",filename, sep = ""), row.names = FALSE)
 
 # Filter out rows that have all NRC categories with 0 value
 df <- df[rowSums(df[, 7:16]) != 0, ]
@@ -196,7 +196,7 @@ classify_text <- function(row) {
 df$class <- apply(df, MARGIN=1, classify_text)
 
 # Save the dataframe to a CSV file
-write.csv(df, file = paste("Stage_2", filename,sep = ""), row.names = FALSE)
+write.csv(df, file = paste("./Debug/Stage_2_", filename,sep = ""), row.names = FALSE)
 
 
 graph_top_words <- function(emotion, timespan, data_source){
@@ -206,7 +206,7 @@ graph_top_words <- function(emotion, timespan, data_source){
   if (timespan == "All") {
     df_emo <- df[which(df$class == emotion_lower),]
   }else{
-    df[which(df$class == emotion_lower & df$Year == timepsan),]
+    df_emo <- df[which(df$class == emotion_lower & df$Year == timespan),]
   }
 
   # Extract the text column
@@ -259,7 +259,7 @@ graph_top_words <- function(emotion, timespan, data_source){
   
   
   # Plot a bar chart of the top 1% most frequent words
-  ggplot(top_words_df, aes(x = reorder(word, -freq), y = freq)) +
+  plot <- ggplot(top_words_df, aes(x = reorder(word, -freq), y = freq)) +
     geom_bar(stat = "identity", fill = rainbow(length(top_words_df$word))) +
     geom_text(aes(label = freq), vjust = -0.5, size = 3) +
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
@@ -267,7 +267,18 @@ graph_top_words <- function(emotion, timespan, data_source){
                        "% Most Frequent Words for", emotion,"Comments",
                        paste("[",data_source,":",timespan,"]",sep = "")), x = "Word", y = "Frequency")
   
+  ggsave(paste("./Graphs/",hotel_name,"_",data_source,"_",timespan,".png",sep = ""), plot = plot, width = 13.66, height = 8.68, dpi = 600)
+  
 }
 
-graph_top_words("Positive")
-graph_top_words("Negative")
+
+# Years
+target_year <- c("All","2019","2020","2021","2022","2023")
+
+# Call the function for each string in the list
+for (i in 1:length(target_year)) {
+  graph_top_words("Positive",target_year[i],"Combined")
+  graph_top_words("Negative",target_year[i],"Combined")
+}
+
+
