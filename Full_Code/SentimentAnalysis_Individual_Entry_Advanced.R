@@ -166,7 +166,7 @@ df <- df %>%
   unnest_wider(sentiment)
 
 # Combined the raw data with analysis results
-df <- cbind(data,df)
+df <- cbind(data[, 1:5],df)
 
 # Save the dataframe to a CSV file
 write.csv(df, file = paste("./Debug/Stage_1_",filename, sep = ""), row.names = FALSE)
