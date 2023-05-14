@@ -103,6 +103,12 @@ FormBigramWordCloud <- function(){
 
   # Generate wordcloud
   wordcloud(freq.df$word,freq.df$freq,max.words=100,random.order = F, colors=pal)
+  
+  # Horizontal barchart for frequency visualization
+  ggplot(head(freq.df,15), aes(reorder(word,freq), freq)) +
+    geom_bar(stat = "identity") + coord_flip() +
+    xlab("Bigrams") + ylab("Frequency") +
+    ggtitle("Most frequent bigrams")
 }
 
 # Create a trigram wordcloud
@@ -117,6 +123,13 @@ FormTrigramWordCloud <- function (){
   
   # Generate wordcloud
   wordcloud(freq.df$word,freq.df$freq,max.words=100,random.order = F, colors=pal)
+  
+  
+  # Horizontal barchart for frequency visualization
+  ggplot(head(freq.df,15), aes(reorder(word,freq), freq)) +   
+    geom_bar(stat="identity") + coord_flip() + 
+    xlab("Trigrams") + ylab("Frequency") +
+    ggtitle("Most frequent trigrams")
 }
 
 
