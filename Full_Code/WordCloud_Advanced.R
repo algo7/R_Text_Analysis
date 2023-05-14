@@ -71,6 +71,21 @@ docs <- tm_map(docs, to_space, "[[:digit:] ]+")
 # Remove English common stop words
 docs <- tm_map(docs, removeWords, stopwords("english"))
 
+# Remove your own stop word
+# specify your stop words as a character vector
+docs <- tm_map(docs, removeWords, c(
+  "lake", "always",
+  "one", "per",
+  "palace",
+  "just", "also", "can",
+  "every", "although", "get",
+  "even", "will", "radissons",
+  "radisson", "rivage", "bolongo",
+  "back", "thomas", "got", "elysian", "Emerald Beach",
+  "still", "away", "next", "emerald", "Margaritaville", "margaritaville", "margarita", "bluebeards", "bolongo bay",
+  "however", "windward", "passage", "Windward", "secret", "harbour", "point", "dive", "deep", "tamarind", "ritz", "ferry"
+))
+
 # Strip single english character
 docs <- tm_map(docs, to_space, "\\b[a-zA-Z]\\b")
 
@@ -96,7 +111,14 @@ FormBigramWordCloud <- function(){
   pal=pal[-(1:3)]
 
   # Generate wordcloud
-  wordcloud(freq.df$word,freq.df$freq,max.words=100,random.order = F, colors=pal)
+  wordcloud(
+    word = freq.df$word,
+    freq = freq.df$freq,
+    max.words = Inf,
+    # min.freq = 10,
+    random.order = F, 
+    colors=pal
+    )
   
   # Horizontal barchart for frequency visualization
   ggplot(head(freq.df,15), aes(reorder(word,freq), freq)) +
@@ -116,8 +138,14 @@ FormTrigramWordCloud <- function (){
   head(freq.df, 20)
   
   # Generate wordcloud
-  wordcloud(freq.df$word,freq.df$freq,max.words=100,random.order = F, colors=pal)
-  
+  wordcloud(
+    word = freq.df$word,
+    freq = freq.df$freq,
+    max.words = Inf,
+    # min.freq = 10,
+    random.order = F, 
+    colors=pal
+  )
   
   # Horizontal barchart for frequency visualization
   ggplot(head(freq.df,15), aes(reorder(word,freq), freq)) +   
