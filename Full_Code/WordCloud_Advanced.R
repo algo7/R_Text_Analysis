@@ -1,7 +1,7 @@
 # List of required packages
 required_pkgs <- c(
   "tm", "syuzhet","ggplot2",
-  "wordcloud","RWeka"
+  "wordcloud","RWeka","udpipe"
 )
 
 # Empty list to hold dependencies that are not installed
@@ -25,8 +25,14 @@ library("syuzhet")
 library("ggplot2")
 library("wordcloud")
 library("RWeka")
+library("udpipe")
 
+# Download the english lang model for udpipe
+# ud_model <- udpipe_download_model(language = "english")
 
+# Load model
+# ud_model <- udpipe_load_model(ud_model$file_model)
+ud_model <- udpipe_load_model("/home/algo7/Desktop/code/R_Text_Analysis/english-ewt-ud-2.5-191206.udpipe")
 ######## Start Here ##########
 
 # Load data set
