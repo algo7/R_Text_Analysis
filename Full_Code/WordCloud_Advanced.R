@@ -60,6 +60,12 @@ to_nothing <- content_transformer(
   }
 )
 
+# Bigram Tokenizer
+BigramTokenizer <- function(x) NGramTokenizer(x, Weka_control(min = 2, max = 2))
+
+# Trigram Tokenizer
+TrigramTokenizer <- function(x) NGramTokenizer(x, Weka_control(min = 3, max = 3))
+
 
 # Convert the text to lower case
 docs <- tm_map(docs, content_transformer(tolower))
