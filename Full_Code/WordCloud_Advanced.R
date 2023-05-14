@@ -122,11 +122,13 @@ docs <- tm_map(docs, removeWords, c(
   "radisson", "rivage", "bolongo",
   "back", "thomas", "got", "elysian", "Emerald Beach",
   "still", "away", "next", "emerald", "Margaritaville", "margaritaville", "margarita", "bluebeards", "bolongo bay",
-  "however", "windward", "passage", "Windward", "secret", "harbour", "point", "dive", "deep", "tamarind", "ritz", "ferry"
+  "however", "windward", "passage", "Windward", "secret", "harbour", "point", "dive", "deep", "tamarind", "ritz", "ferry",
+  "blubeard", "castle"
 ))
 
-docs_emo <- tm_map(docs_emo, to_custom, "desk", "frontdesk")
-docs_emo <- tm_map(docs_emo, to_custom, "check", "check-in/check-out")
+# Custom word replacement
+docs <- tm_map(docs, to_custom, "desk", "frontdesk")
+docs <- tm_map(docs, to_custom, "check", "check-in/check-out")
 
 # Strip single english character
 docs <- tm_map(docs, to_space, "\\b[a-zA-Z]\\b")
@@ -156,7 +158,7 @@ FormBigramWordCloud <- function(){
   wordcloud(
     word = freq.df$word,
     freq = freq.df$freq,
-    max.words = Inf,
+    max.words = 150,
     # min.freq = 10,
     random.order = F, 
     colors=pal
@@ -183,7 +185,7 @@ FormTrigramWordCloud <- function (){
   wordcloud(
     word = freq.df$word,
     freq = freq.df$freq,
-    max.words = Inf,
+    max.words = 150,
     # min.freq = 10,
     random.order = F, 
     colors=pal
