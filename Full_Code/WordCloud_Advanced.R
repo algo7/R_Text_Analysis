@@ -1,6 +1,6 @@
 # List of required packages
 required_pkgs <- c(
-  "tm", "syuzhet","ggplot2","udpipe",
+  "tm", "syuzhet","ggplot2",
   "wordcloud","RWeka"
 )
 
@@ -23,15 +23,9 @@ if (length(not_met_dependencies) != 0) {
 library("tm")
 library("syuzhet")
 library("ggplot2")
-library("udpipe")
 library("wordcloud")
 library("RWeka")
 
-# Download the english lang model for udpipe
-ud_model <- udpipe_download_model(language = "english")
-
-# Load model
-ud_model <- udpipe_load_model(ud_model$file_model)
 
 ######## Start Here ##########
 
