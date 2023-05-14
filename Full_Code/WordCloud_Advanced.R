@@ -87,5 +87,20 @@ docs <- tm_map(docs, stripWhitespace)
 docs <- tm_map(docs, to_nothing, "^\\s+")
 
 
+FormBigramWordCloud <- function(x){
+  # Form bigram term-doc matrix
+  tdm.bigram = TermDocumentMatrix(docs,control = list(tokenize = BigramTokenizer))
+  
+  # Calculate bigram frequency
+  freq = sort(rowSums(as.matrix(tdm.bigram)),decreasing = TRUE)
+  freq.df = data.frame(word=names(freq), freq=freq)
+  head(freq.df, 20)
+  
+  # Wordcloud color selection
+  pal=brewer.pal(8,"Blues")
+  pal=pal[-(1:3)]
+
+  wordcloud(freq.df$word,freq.df$freq,max.words=100,random.order = F, colors=pal)
+}
 
 
