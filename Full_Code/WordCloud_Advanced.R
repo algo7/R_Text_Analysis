@@ -32,11 +32,17 @@ library("udpipe")
 
 # Load model
 # ud_model <- udpipe_load_model(ud_model$file_model)
-ud_model <- udpipe_load_model("/home/algo7/Desktop/code/R_Text_Analysis/english-ewt-ud-2.5-191206.udpipe")
+# ud_model <- udpipe_load_model("/home/algo7/Desktop/code/R_Text_Analysis/english-ewt-ud-2.5-191206.udpipe")
 ######## Start Here ##########
 
 # Load data set
-data <- read.csv(file.choose(), header = T)
+file <- file.choose()
+filename <- basename(file)
+data <- read.csv(file, header = T)
+splitted_hotel_name <- unlist(strsplit(filename, " "))
+hotel_name <- paste(splitted_hotel_name[1], splitted_hotel_name[2])
+
+data <- read.csv(file, header = T)
 
 # Extract the text column
 docs <- iconv(data$Text)
@@ -100,8 +106,8 @@ TrigramTokenizer <- function(x) NGramTokenizer(x, Weka_control(min = 3, max = 3)
 # Convert the text to lower case
 docs <- tm_map(docs, content_transformer(tolower))
 
-# Remove nouns, pronouns, verb, interjections, numbers, and proper nouns
-docs <- tm_map(docs, remove_undesired_pos)
+# # Remove nouns, pronouns, verb, interjections, numbers, and proper nouns
+# docs <- tm_map(docs, remove_undesired_pos)
 
 # Remove numbers and punctuation
 docs <- tm_map(docs, to_space, "[[:punct:] ]+")
@@ -115,7 +121,7 @@ docs <- tm_map(docs, removeWords, stopwords("english"))
 docs <- tm_map(docs, removeWords, c(
   "lake", "always",
   "one", "per",
-  "palace",
+  "palace","resort",
   "just", "also", "can",
   "every", "although", "get",
   "even", "will", "radissons",
@@ -125,10 +131,6 @@ docs <- tm_map(docs, removeWords, c(
   "however", "windward", "passage", "Windward", "secret", "harbour", "point", "dive", "deep", "tamarind", "ritz", "ferry",
   "blubeard", "castle"
 ))
-
-# Custom word replacement
-docs <- tm_map(docs, to_custom, "desk", "frontdesk")
-docs <- tm_map(docs, to_custom, "check", "check-in/check-out")
 
 # Strip single english character
 docs <- tm_map(docs, to_space, "\\b[a-zA-Z]\\b")
@@ -140,6 +142,11 @@ docs <- tm_map(docs, stripWhitespace)
 docs <- tm_map(docs, to_nothing, "^\\s+")
 
 
+# Save the dataframe to a CSV file
+# Convert VCorpus to data frame
+df <- data.frame(processed_text = sapply(docs, as.character))
+write.csv(df, file = paste("./Debug/Stage_1_", filename, sep = ""), row.names = FALSE)
+
 # Create a bigram wordcloud
 FormBigramWordCloud <- function(){
   # Form bigram term-doc matrix
@@ -149,53 +156,61 @@ FormBigramWordCloud <- function(){
   freq = sort(rowSums(as.matrix(tdm.bigram)),decreasing = TRUE)
   freq.df = data.frame(word=names(freq), freq=freq)
   head(freq.df, 20)
-  
-  # Wordcloud color selection
-  pal=brewer.pal(8,"Blues")
-  pal=pal[-(1:3)]
 
   # Generate wordcloud
+  png(paste("./Graphs/", "word_cloud_bigram_", hotel_name, "_combined", ".png", sep = ""), width = 13.66,height = 8.68, res = 500, units='in')
+  par(mai = c(1,1,1,1))
   wordcloud(
     word = freq.df$word,
     freq = freq.df$freq,
     max.words = 150,
+    rot.per = 0.35,
     # min.freq = 10,
     random.order = F, 
-    colors=pal
+    colors = brewer.pal(9, "Set1")
     )
+  dev.off()
   
   # Horizontal barchart for frequency visualization
-  ggplot(head(freq.df,15), aes(reorder(word,freq), freq)) +
+  plot <- ggplot(head(freq.df, 20), aes(reorder(word,freq), freq)) +
     geom_bar(stat = "identity") + coord_flip() +
     xlab("Bigrams") + ylab("Frequency") +
-    ggtitle("Most frequent bigrams")
+    ggtitle("Top 20 Bigrams")
+  
+  ggsave(paste("./Graphs/", "freq_bigram_", hotel_name, "_combined", ".png", sep = ""), plot = plot, width = 13.66, height = 8.68, dpi = 600)
 }
 
 # Create a trigram wordcloud
 FormTrigramWordCloud <- function (){
   # Form trigram term-doc matrix
   tdm.trigram = TermDocumentMatrix(docs, control = list(tokenize = TrigramTokenizer))
-  
+
   # Calculate trigram frequency
   freq = sort(rowSums(as.matrix(tdm.trigram)),decreasing = TRUE)
   freq.df = data.frame(word=names(freq), freq=freq)
   head(freq.df, 20)
-  
+
   # Generate wordcloud
+  png(paste("./Graphs/", "word_cloud_trigram_", hotel_name, "_combined", ".png", sep = ""), width = 13.66,height = 8.68, res = 500, units='in')
+  par(mai = c(1,1,1,1))
   wordcloud(
     word = freq.df$word,
     freq = freq.df$freq,
     max.words = 150,
     # min.freq = 10,
-    random.order = F, 
-    colors=pal
+    random.order = F,
+    rot.per = 0.35,
+    colors = brewer.pal(9, "Set1")
   )
-  
+  dev.off()
+
   # Horizontal barchart for frequency visualization
-  ggplot(head(freq.df,15), aes(reorder(word,freq), freq)) +   
-    geom_bar(stat="identity") + coord_flip() + 
+  plot <- ggplot(head(freq.df,20), aes(reorder(word,freq), freq)) +
+    geom_bar(stat="identity") + coord_flip() +
     xlab("Trigrams") + ylab("Frequency") +
-    ggtitle("Most frequent trigrams")
+    ggtitle("Top 20 Trigrams")
+
+  ggsave(paste("./Graphs/", "freq_trigram_", hotel_name, "_combined", ".png", sep = ""), plot = plot, width = 13.66, height = 8.68, dpi = 600)
 }
 
 # Call the function
