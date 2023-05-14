@@ -87,7 +87,8 @@ docs <- tm_map(docs, stripWhitespace)
 docs <- tm_map(docs, to_nothing, "^\\s+")
 
 
-FormBigramWordCloud <- function(x){
+# Create a bigram wordcloud
+FormBigramWordCloud <- function(){
   # Form bigram term-doc matrix
   tdm.bigram = TermDocumentMatrix(docs,control = list(tokenize = BigramTokenizer))
   
@@ -100,6 +101,21 @@ FormBigramWordCloud <- function(x){
   pal=brewer.pal(8,"Blues")
   pal=pal[-(1:3)]
 
+  # Generate wordcloud
+  wordcloud(freq.df$word,freq.df$freq,max.words=100,random.order = F, colors=pal)
+}
+
+# Create a trigram wordcloud
+FormTrigramWordCloud <- function (){
+  # Form trigram term-doc matrix
+  tdm.trigram = TermDocumentMatrix(docs, control = list(tokenize = TrigramTokenizer))
+  
+  # Calculate trigram frequency
+  freq = sort(rowSums(as.matrix(tdm.trigram)),decreasing = TRUE)
+  freq.df = data.frame(word=names(freq), freq=freq)
+  head(freq.df, 20)
+  
+  # Generate wordcloud
   wordcloud(freq.df$word,freq.df$freq,max.words=100,random.order = F, colors=pal)
 }
 
