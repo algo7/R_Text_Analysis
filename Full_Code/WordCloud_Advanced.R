@@ -60,6 +60,36 @@ to_nothing <- content_transformer(
   }
 )
 
+
+# Function to substitute the given pattern with another given pattern
+to_custom <- content_transformer(
+  function(text, pattern_a, pattern_b) {
+    gsub(pattern_a, pattern_b, text)
+  }
+)
+
+# Function to remove all undesired pos
+remove_undesired_pos <- content_transformer(function(text) {
+  # Annotate the text using the UDPipe model
+  annotation <- udpipe_annotate(ud_model, text)
+  
+  # Convert the annotation to a data frame
+  annotation_df <- as.data.frame(annotation)
+  
+  # Filter undesired POS
+  filtered <- subset(
+    annotation_df,
+    !(upos %in% c("PROPN", "PRON", "NUM", "VERB", "INTJ", "AUX", "CCONJ", "ADP", "X"))
+  )
+  # print(paste("Filtered POS tags:", paste(filtered$upos, collapse = ", ")))
+  
+  
+  # Combine the processed data into a single string
+  # collapse is required other wise each non-nouns will be an individual
+  # element in the character vector while a document is a string
+  paste(filtered$token, collapse = " ")
+})
+
 # Bigram Tokenizer
 BigramTokenizer <- function(x) NGramTokenizer(x, Weka_control(min = 2, max = 2))
 
@@ -69,6 +99,9 @@ TrigramTokenizer <- function(x) NGramTokenizer(x, Weka_control(min = 3, max = 3)
 
 # Convert the text to lower case
 docs <- tm_map(docs, content_transformer(tolower))
+
+# Remove nouns, pronouns, verb, interjections, numbers, and proper nouns
+docs <- tm_map(docs, remove_undesired_pos)
 
 # Remove numbers and punctuation
 docs <- tm_map(docs, to_space, "[[:punct:] ]+")
@@ -91,6 +124,9 @@ docs <- tm_map(docs, removeWords, c(
   "still", "away", "next", "emerald", "Margaritaville", "margaritaville", "margarita", "bluebeards", "bolongo bay",
   "however", "windward", "passage", "Windward", "secret", "harbour", "point", "dive", "deep", "tamarind", "ritz", "ferry"
 ))
+
+docs_emo <- tm_map(docs_emo, to_custom, "desk", "frontdesk")
+docs_emo <- tm_map(docs_emo, to_custom, "check", "check-in/check-out")
 
 # Strip single english character
 docs <- tm_map(docs, to_space, "\\b[a-zA-Z]\\b")
