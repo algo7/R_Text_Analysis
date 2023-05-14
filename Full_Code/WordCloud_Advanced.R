@@ -60,27 +60,6 @@ to_nothing <- content_transformer(
   }
 )
 
-# Function to remove all english nouns
-remove_undesired_pos <- content_transformer(function(text) {
-  
-  # Annotate the text using the UDPipe model
-  annotation <- udpipe_annotate(ud_model, text)
-  
-  # Convert the annotation to a data frame
-  annotation_df <- as.data.frame(annotation)
-  
-  # Filter undesired POS
-  filtered <- subset(annotation_df, 
-                     !(upos %in% c("NOUN", "PROPN", "VERB", "PRON", "NUM", "INTJ", "AUX", "CCONJ", "ADP", "X")))
-  # print(paste("Filtered POS tags:", paste(filtered$upos, collapse = ", ")))
-  
-  
-  # Combine the processed data into a single string
-  # collapse is required other wise each non-nouns will be an individual
-  # element in the character vector while a document is a string
-  paste(filtered$token, collapse = " ")
-})
-
 
 # Convert the text to lower case
 docs <- tm_map(docs, content_transformer(tolower))
@@ -89,28 +68,8 @@ docs <- tm_map(docs, content_transformer(tolower))
 docs <- tm_map(docs, to_space, "[[:punct:] ]+")
 docs <- tm_map(docs, to_space, "[[:digit:] ]+")
 
-# Remove nouns, pronouns, verb, interjections, numbers, and proper nouns
-docs <- tm_map(docs, remove_undesired_pos)
-
 # Remove English common stop words
 docs <- tm_map(docs, removeWords, stopwords("english"))
-
-# Remove your own stop word
-# specify your stop words as a character vector
-docs <- tm_map(docs, removeWords, c(
-  "lake","always",
-  "one","per","hotel","rooms",
-  "palace","staff","room",
-  "just", "also", "can",
-  "every","although","get",
-  "even","will","radissons",
-  "radisson","rivage","pool","view","stay",
-  "back","thomas","property","back","island","day","hill","got",
-  "resort","views","time","place","two","first","front","much","stayed",
-  "really","around","everything", "also","many","little","sure","never","close","elysian",
-  "still","away","ocean","next","beach","emerald","Margaritaville","margaritaville","margarita",
-  "however","right","windward","passage","Windward","secret","harbour","point","dive","deep","tamarind","ritz","ferry"
-))
 
 # Strip single english character
 docs <- tm_map(docs, to_space, "\\b[a-zA-Z]\\b")
