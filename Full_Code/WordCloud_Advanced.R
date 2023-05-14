@@ -39,7 +39,7 @@ ud_model <- udpipe_load_model(ud_model$file_model)
 data <- read.csv(file.choose(), header = T)
 
 # Extract the text column
-docs <- iconv(data$content)
+docs <- iconv(data$Text)
 
 # Load the text as a corpus
 docs <- VCorpus(VectorSource(docs))
@@ -132,4 +132,7 @@ FormTrigramWordCloud <- function (){
     ggtitle("Most frequent trigrams")
 }
 
+# Call the function
+FormBigramWordCloud()
+FormTrigramWordCloud()
 
