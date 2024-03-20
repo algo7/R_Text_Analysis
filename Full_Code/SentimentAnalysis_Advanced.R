@@ -33,10 +33,10 @@ ud_model <- udpipe_load_model(ud_model$file_model)
 ######## Start Here ##########
 
 # Load data set
-data <- read.csv(file.choose(), header = T)
+data <- read.csv("https://storage.algo7.tools/Hotel_Schweizerhof_Bern_Spa-2807b3b1-88.csv", header = T)
 
 # Extract the text column
-docs <- iconv(data$content)
+docs <- iconv(data$Text)
 
 # Load the text as a corpus
 docs <- VCorpus(VectorSource(docs))

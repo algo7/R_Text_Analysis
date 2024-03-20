@@ -28,6 +28,9 @@ if (length(not_met_dependencies) != 0) {
 library("tm")
 library("syuzhet")
 
+# Data source
+data_source <- "https://storage.algo7.tools/Hotel_Schweizerhof_Bern_Spa-2807b3b1-88.csv"
+
 ################################
 #                             ##
 #          START HERE         ##
@@ -82,6 +85,9 @@ sent1 <- barplot(
   ylim = c(0, max(word_freq) * 1.1),
 )
 
+
+# Add actual value on top of the bars
+text(sent1, word_freq, labels = word_freq, pos = 3, cex = 0.7)
 
 # Plot it
 sent2 <- barplot(sentiment_sum,

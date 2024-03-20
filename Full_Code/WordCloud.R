@@ -27,17 +27,17 @@ library("SnowballC")
 library("wordcloud")
 library("wordcloud2")
 library("RColorBrewer")
-
+data_source <- "https://storage.algo7.tools/Hotel_Schweizerhof_Bern_Spa-2807b3b1-88.csv"
 
 ######## Start Here ##########
 # Load Data
-data <- read.csv(file.choose(), header = T)
+data <- read.csv(data_source, header = T)
 
 # Extract the title
 # titles <- iconv(data$title)
 
 # Extract the content
-contents <- iconv(data$content)
+contents <- iconv(data$Text)
 
 # Load the data as a corpus
 docs <- VCorpus(VectorSource(contents))
@@ -88,6 +88,8 @@ v <- sort(rowSums(m), decreasing = TRUE)
 d <- data.frame(word = names(v), freq = v)
 
 
+
+######## Stop Here ##########
 # Write to CSV
 #write.csv(d, "beau_rivage_palace_dtm.csv", row.names = F)
 

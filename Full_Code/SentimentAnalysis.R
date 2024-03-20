@@ -22,13 +22,14 @@ if (length(not_met_dependencies) != 0) {
 library("tm")
 library("syuzhet")
 
+data_source <- "https://storage.algo7.tools/Hotel_Schweizerhof_Bern_Spa-2807b3b1-88.csv"
 ######## Start Here ##########
 
 # Load data set
-data <- read.csv(file.choose(), header = T)
+data <- read.csv(data_source, header = T)
 
 # Extract the text column
-docs <- iconv(data$content)
+docs <- iconv(data$Text)
 
 # Load the text as a corpus
 docs <- VCorpus(VectorSource(docs))
@@ -62,12 +63,12 @@ docs <- tm_map(docs, removeWords, c(
   "lake","always",
   "one","per","hotel","rooms",
   "palace","staff","room",
-  "just", "also", "can",
+  "just", "also", "can","hotel",
   "every","although","get",
   "even","will","radissons",
-  "radisson","rivage","pool","view","stay",
+  "radisson","rivage","pool","view","stay","station","train",
   "back","thomas","property","back","island","day","hill",
-  "resort","views","time","place"
+  "resort","views","time","place","bern"
 ))
 
 # Build term-document matrix
@@ -83,6 +84,17 @@ word_freq <- sort(rowSums(m),decreasing = T)
 
 # Extract only the words with frequency greater than 170
 word_freq <- subset(word_freq, word_freq >= 120)
+
+# Uses National Research Council Canada (NRC)  Emotion lexicon
+# with eight emotions (anger, fear, anticipation, trust, surprise, sadness, joy, and disgust)
+# and two sentiments (negative and positive)
+sentiment_scores <- get_nrc_sentiment(names(word_freq), language = "english")
+
+# Sum the sentiment score matrix
+sentiment_sum <- colSums(sentiment_scores)
+sentiment_sum<-sort(sentiment_sum,decreasing = TRUE)
+
+######## Stop Here ##########
 
 # Plot it
 sent1 <- barplot(
@@ -100,14 +112,7 @@ sent1 <- barplot(
 # Add actual value on top of the bars
 text(sent1, word_freq, labels = word_freq, pos = 3, cex = 0.7)
 
-# Uses National Research Council Canada (NRC)  Emotion lexicon
-# with eight emotions (anger, fear, anticipation, trust, surprise, sadness, joy, and disgust)
-# and two sentiments (negative and positive)
-sentiment_scores <- get_nrc_sentiment(names(word_freq), language = "english")
 
-# Sum the sentiment score matrix
-sentiment_sum <- colSums(sentiment_scores)
-sentiment_sum<-sort(sentiment_sum,decreasing = TRUE)
 # Plot it
 sent2 <- barplot(sentiment_sum,
     las = 2,
