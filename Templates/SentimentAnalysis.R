@@ -104,4 +104,3 @@ text(sent2,
      labels = sentiment_sum,
      pos = 3
 )
-
